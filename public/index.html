@@ -288,6 +288,7 @@
       </div>
     </div>
     <button id="full-demo-btn" class="full-demo-btn" data-i18n="fullDemoBtn">▶ Full Demo</button>
+    <button id="reset-btn" title="Reset demo data" style="font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--white);color:var(--gray-500);cursor:pointer;white-space:nowrap;" onclick="resetDemo()">↺ Reset</button>
     <button id="lang-toggle" class="lang-btn">AR</button>
     <div class="navcta" data-i18n="navcta">HR Workspace</div>
   </div>
@@ -1784,6 +1785,22 @@ document.getElementById('demo-btn-1').addEventListener('click', runDemo1);
 document.getElementById('demo-btn-2').addEventListener('click', runDemo2);
 document.getElementById('demo-btn-3').addEventListener('click', runDemo3);
 document.getElementById('full-demo-btn').addEventListener('click', runFullDemo);
+
+async function resetDemo() {
+  const btn = document.getElementById('reset-btn');
+  btn.disabled = true;
+  btn.textContent = window.__lang === 'ar' ? '…جارٍ' : '…';
+  try {
+    const r = await fetch('/api/reset', { method: 'POST' });
+    if (!r.ok) throw new Error();
+    btn.textContent = window.__lang === 'ar' ? '✓ تمّ' : '✓ Done';
+    loadNotifications();
+    setTimeout(() => { btn.textContent = '↺ Reset'; btn.disabled = false; }, 2000);
+  } catch {
+    btn.textContent = '✗';
+    setTimeout(() => { btn.textContent = '↺ Reset'; btn.disabled = false; }, 2000);
+  }
+}
 
 /* ============================================================
    INIT

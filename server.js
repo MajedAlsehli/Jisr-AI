@@ -17,6 +17,7 @@ app.use('/api/copilot', require('./routes/copilot'));
 app.use('/api/recommendations', require('./routes/recommendations'));
 app.use('/api/promotion', require('./routes/promotion'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/employees', require('./routes/employees'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Jisr AI running on http://localhost:${PORT}`));

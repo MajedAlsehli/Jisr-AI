@@ -70,6 +70,23 @@
   .full-demo-btn:hover{background:var(--gray-600);border-color:var(--gray-600);}
   .full-demo-btn:disabled{opacity:.35;cursor:not-allowed;}
 
+  /* ================= EMPLOYEE POPUP ================= */
+  .emp-popup{position:fixed;z-index:400;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 20px 16px;width:272px;box-shadow:0 16px 48px rgba(0,0,0,.18);animation:popupIn .15s ease;}
+  @keyframes popupIn{from{opacity:0;transform:scale(.94) translateY(4px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  .emp-popup-close{position:absolute;top:10px;right:12px;cursor:pointer;color:var(--gray-500);font-size:15px;line-height:1;background:none;border:none;padding:4px;}
+  .emp-popup-close:hover{color:var(--ink);}
+  .emp-popup-avatar{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--white);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+  .emp-popup-name{font-size:14.5px;font-weight:800;margin-bottom:2px;}
+  .emp-popup-meta{font-size:11.5px;color:var(--gray-600);margin-bottom:12px;line-height:1.45;}
+  .emp-popup-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .emp-popup-stat{background:var(--gray-100);border-radius:8px;padding:9px 11px;}
+  .emp-popup-stat-num{font-size:17px;font-weight:800;line-height:1;}
+  .emp-popup-stat-label{font-size:9.5px;color:var(--gray-500);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+  .profile-pill{font-family:inherit;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-left:6px;}
+  .profile-pill:hover{background:var(--gray-100);border-color:var(--ink);color:var(--ink);}
+  /* ================= CONFETTI ================= */
+  @keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}85%{opacity:1;}100%{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+
   /* ================= DEMO NARRATOR ================= */
   .demo-narrator{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(18px);background:#0B0B0B;color:#fff;padding:14px 20px 14px 14px;border-radius:16px;font-size:13.5px;font-weight:500;line-height:1.55;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;z-index:250;box-shadow:0 16px 48px rgba(0,0,0,.4);max-width:580px;width:calc(100% - 48px);display:flex;align-items:flex-start;gap:12px;}
   .demo-narrator.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -938,6 +955,8 @@ function askForEmployee(onDone){
     const emp = dept && dept.employees.find(e=>String(e.id)===String(empId));
     const empName = emp ? `${emp.first_name} ${emp.last_name}` : 'Selected employee';
     wrap.innerHTML = `<div class="selector-label" style="margin-bottom:0;">${S('selectedLabel')} <strong>${empName}</strong></div>`;
+    wrap.querySelector('strong').style.cursor = 'pointer';
+    wrap.querySelector('strong').addEventListener('click', e => { e.stopPropagation(); showEmpPopup(empId, wrap.querySelector('strong')); });
     onDone(empId, empName);
   });
 }
@@ -1150,7 +1169,9 @@ empSelect.addEventListener("change", async ()=>{
 function renderHRReview(empId, recs){
   const area = document.getElementById("ld-rec-area");
   area.innerHTML = "";
-  area.appendChild(el("div", "section-label", S('ldSectionLabel')));
+  const ldLabel = el("div", "section-label", S('ldSectionLabel'));
+  if(ldCurrentEmpId) ldLabel.appendChild(makeProfilePill(ldCurrentEmpId, ldCurrentEmpName));
+  area.appendChild(ldLabel);
   const grid = document.createElement("div");
   grid.className = "rec-grid";
 
@@ -1359,6 +1380,9 @@ function renderPromo(empId, data){
       <div class="score-card" id="score-card"></div>
     </div>
   `;
+  const promoLabel = el("div", "section-label", "");
+  promoLabel.appendChild(makeProfilePill(empId, data.empName));
+  area.prepend(promoLabel);
   const list = document.getElementById("factor-list");
   data.factors.forEach(f=>{
     const row = document.createElement("div");
@@ -1381,6 +1405,7 @@ function renderPromo(empId, data){
   document.getElementById("decision-btn").addEventListener("click", async ()=>{
     try {
       await fetch(`/api/promotion/${empId}/forward`, { method:'POST' });
+      if (ready) launchConfetti();
       decisionBox.innerHTML = ready
         ? `<div class="decision-confirmed">${window.__lang === 'ar' ? `✓ تم الإرسال إلى ${data.managerName} (مدير ${data.empName}) لمراجعة اللجنة` : `✓ Sent to ${data.managerName} (${data.empName}'s manager) for committee review`}</div>`
         : `<div class="decision-confirmed">${window.__lang === 'ar' ? `✓ تم إرسال ملاحظات التطوير إلى ${data.managerName}` : `✓ Development feedback sent to ${data.managerName}`}</div>`;
@@ -1388,6 +1413,92 @@ function renderPromo(empId, data){
       await loadNotifications();
     } catch(e){ showToast(S('promoForwardError')); }
   });
+}
+
+/* ============================================================
+   EMPLOYEE POPUP
+   ============================================================ */
+let __popupEmpId = null;
+
+function makeProfilePill(empId, empName){
+  const btn = document.createElement('button');
+  btn.className = 'profile-pill';
+  btn.innerHTML = `👤 ${empName}`;
+  btn.addEventListener('click', e => { e.stopPropagation(); showEmpPopup(empId, btn); });
+  return btn;
+}
+
+function showEmpPopup(empId, anchorEl){
+  hideEmpPopup();
+  __popupEmpId = empId;
+  const isAr = window.__lang === 'ar';
+  const initials = '??';
+  const popup = document.createElement('div');
+  popup.className = 'emp-popup';
+  popup.id = 'emp-popup';
+  popup.innerHTML = `
+    <button class="emp-popup-close" id="emp-popup-close">✕</button>
+    <div class="emp-popup-avatar" id="ep-avatar">${initials}</div>
+    <div class="emp-popup-name" id="ep-name">${isAr ? 'جارٍ التحميل...' : 'Loading…'}</div>
+    <div class="emp-popup-meta" id="ep-meta"></div>
+    <div class="emp-popup-grid">
+      <div class="emp-popup-stat"><div class="emp-popup-stat-num" id="ep-att">—</div><div class="emp-popup-stat-label">${isAr ? 'الحضور' : 'Attendance'}</div></div>
+      <div class="emp-popup-stat"><div class="emp-popup-stat-num" id="ep-leave">—</div><div class="emp-popup-stat-label">${isAr ? 'رصيد الإجازة' : 'Leave Balance'}</div></div>
+      <div class="emp-popup-stat"><div class="emp-popup-stat-num" id="ep-tenure">—</div><div class="emp-popup-stat-label">${isAr ? 'المدة (سنوات)' : 'Tenure (yrs)'}</div></div>
+      <div class="emp-popup-stat"><div class="emp-popup-stat-num" id="ep-promo">—</div><div class="emp-popup-stat-label">${isAr ? 'درجة الترقية' : 'Promo Score'}</div></div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  document.getElementById('emp-popup-close').addEventListener('click', hideEmpPopup);
+
+  const rect = anchorEl.getBoundingClientRect();
+  let top = rect.bottom + 8;
+  let left = rect.left;
+  if (left + 280 > window.innerWidth - 16) left = window.innerWidth - 288;
+  if (top + 260 > window.innerHeight - 16) top = rect.top - 268;
+  popup.style.top = Math.max(8, top) + 'px';
+  popup.style.left = Math.max(8, left) + 'px';
+
+  fetch(`/api/employees/${empId}/snapshot`).then(r => r.json()).then(d => {
+    if (!document.getElementById('emp-popup') || __popupEmpId !== empId) return;
+    const av = d.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('ep-avatar').textContent = av;
+    document.getElementById('ep-name').textContent = d.name;
+    document.getElementById('ep-meta').innerHTML = `${d.role} · ${d.department}${d.grade ? ' · Grade ' + d.grade : ''}${d.manager ? `<br>${isAr ? 'المدير:' : 'Manager:'} ${d.manager}` : ''}`;
+    document.getElementById('ep-att').textContent = d.attendancePct + '%';
+    document.getElementById('ep-leave').textContent = d.leaveBalance != null ? d.leaveBalance + 'd' : '—';
+    document.getElementById('ep-tenure').textContent = d.tenureYears + 'y';
+    const promoEl = document.getElementById('ep-promo');
+    promoEl.textContent = d.promotionScore + '%';
+    promoEl.style.color = d.promotionReady ? 'var(--ok)' : 'inherit';
+  }).catch(hideEmpPopup);
+}
+
+function hideEmpPopup(){
+  const p = document.getElementById('emp-popup');
+  if (p) p.remove();
+  __popupEmpId = null;
+}
+
+document.addEventListener('click', e => {
+  const p = document.getElementById('emp-popup');
+  if (p && !p.contains(e.target)) hideEmpPopup();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideEmpPopup(); });
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function launchConfetti(){
+  const colors = ['#6FE3A6','#F2A65A','#4A9EFF','#FF6B8A','#FFD700','#C084FC','#0B0B0B'];
+  for(let i = 0; i < 90; i++){
+    const p = document.createElement('div');
+    const size = 6 + Math.random() * 8;
+    const isCircle = Math.random() > 0.4;
+    p.style.cssText = `position:fixed;top:-12px;left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${isCircle?'50%':'2px'};pointer-events:none;z-index:500;animation:confettiFall ${1.4+Math.random()*2.2}s ease-in forwards;animation-delay:${Math.random()*0.6}s;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 4500);
+  }
 }
 
 /* ============================================================

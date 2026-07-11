@@ -1458,7 +1458,7 @@ function showEmpPopup(empId, anchorEl){
   popup.style.top = Math.max(8, top) + 'px';
   popup.style.left = Math.max(8, left) + 'px';
 
-  fetch(`/api/employees/${empId}/snapshot`).then(r => r.json()).then(d => {
+  fetch(`/api/employees/${empId}/snapshot`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
     if (!document.getElementById('emp-popup') || __popupEmpId !== empId) return;
     const av = d.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('ep-avatar').textContent = av;

@@ -105,6 +105,54 @@ async function handleIntent(intent, empId) {
       const years = ((Date.now() - new Date(e.role_start_date).getTime()) / (365.25 * 24 * 3600 * 1000)).toFixed(1);
       return { intent, data: { name: `${e.first_name} ${e.last_name}`, role: e.role, years } };
     }
+    case 'promotionReady': {
+      const r = await db.query(
+        `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department
+         FROM employees e JOIN departments d ON e.department_id = d.id
+         WHERE e.performance_rating_met = true AND e.goal_achievement_met = true
+           AND e.leadership_cert = true AND e.manager_feedback_positive = true
+           AND e.peer_feedback_positive = true
+           AND (CURRENT_DATE - e.role_start_date) / 365.25 >= 2
+         ORDER BY d.label, e.first_name`
+      );
+      return { intent, data: { count: r.rows.length, employees: r.rows } };
+    }
+    case 'topPerformers': {
+      const r = await db.query(
+        `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department
+         FROM employees e JOIN departments d ON e.department_id = d.id
+         WHERE e.performance_rating_met = true AND e.goal_achievement_met = true
+         ORDER BY d.label, e.first_name`
+      );
+      return { intent, data: { count: r.rows.length, employees: r.rows } };
+    }
+    case 'headcount': {
+      const r = await db.query(
+        `SELECT d.label AS department, COUNT(e.id)::int AS count
+         FROM departments d LEFT JOIN employees e ON e.department_id = d.id
+         GROUP BY d.id, d.label ORDER BY d.label`
+      );
+      const total = r.rows.reduce((s, row) => s + row.count, 0);
+      return { intent, data: { departments: r.rows, total } };
+    }
+    case 'certMissing': {
+      const r = await db.query(
+        `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department
+         FROM employees e JOIN departments d ON e.department_id = d.id
+         WHERE e.leadership_cert = false ORDER BY d.label, e.first_name`
+      );
+      return { intent, data: { count: r.rows.length, employees: r.rows } };
+    }
+    case 'newJoiners': {
+      const r = await db.query(
+        `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department,
+                e.hire_date
+         FROM employees e JOIN departments d ON e.department_id = d.id
+         WHERE e.hire_date >= CURRENT_DATE - INTERVAL '1 year'
+         ORDER BY e.hire_date DESC`
+      );
+      return { intent, data: { count: r.rows.length, employees: r.rows } };
+    }
     default:
       return null;
   }

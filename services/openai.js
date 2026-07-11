@@ -65,6 +65,11 @@ function keywordClassify(question) {
   if (/late attendance|repeated late|coming late|late this month/.test(q)) return { intent: 'lateAttendance', employeeName: null };
   if (/await|waiting.*approval|manager approval|not yet approved/.test(q)) return { intent: 'awaitingApproval', employeeName: null };
   if (/approved today|today.*approv/.test(q)) return { intent: 'approvedToday', employeeName: null };
+  if (/ready for promot|promot.*ready|who.*promot/.test(q)) return { intent: 'promotionReady', employeeName: null };
+  if (/top perform|best perform|high perform/.test(q)) return { intent: 'topPerformers', employeeName: null };
+  if (/headcount|how many.*employ|employ.*count|staff count/.test(q)) return { intent: 'headcount', employeeName: null };
+  if (/missing cert|no cert|without cert|leadership cert/.test(q)) return { intent: 'certMissing', employeeName: null };
+  if (/new joiner|joined.*year|recently joined|new hire/.test(q)) return { intent: 'newJoiners', employeeName: null };
   if (/attendance|absent|present|showing up/.test(q)) return { intent: 'attendance', employeeName: null };
   if (/leave balance|days (off|remaining|left)|vacation|annual leave/.test(q)) return { intent: 'balance', employeeName: null };
   if (/policy|recent request|request status/.test(q)) return { intent: 'policy', employeeName: null };
@@ -152,8 +157,26 @@ function formatFallbackReply(intent, data) {
       return `${data.name}'s manager is ${data.manager}.`;
     case 'tenure':
       return `${data.name} has been in their current role as ${data.role} for ${data.years} years.`;
+    case 'promotionReady':
+      return data.count === 0
+        ? 'No employees currently meet all promotion criteria.'
+        : `${data.count} employee(s) meet all promotion criteria: ${data.employees.map(e => `${e.name} (${e.department})`).join(', ')}.`;
+    case 'topPerformers':
+      return data.count === 0
+        ? 'No employees met both performance and goal targets this quarter.'
+        : `${data.count} employee(s) met both performance and goal targets this quarter: ${data.employees.map(e => e.name).join(', ')}.`;
+    case 'headcount':
+      return `Total headcount: ${data.total}. Breakdown — ${data.departments.map(d => `${d.department}: ${d.count}`).join(', ')}.`;
+    case 'certMissing':
+      return data.count === 0
+        ? 'All employees have their leadership certification.'
+        : `${data.count} employee(s) are missing their leadership certification: ${data.employees.map(e => e.name).join(', ')}.`;
+    case 'newJoiners':
+      return data.count === 0
+        ? 'No employees joined in the last year.'
+        : `${data.count} employee(s) joined in the last year: ${data.employees.map(e => e.name).join(', ')}.`;
     default:
-      return "I can help with pending requests, attendance, leave balances, or policy checks. Try one of the suggestion chips above.";
+      return "I can help with pending requests, attendance, leave balances, promotion readiness, headcount, and more. Try one of the suggestion chips above.";
   }
 }
 

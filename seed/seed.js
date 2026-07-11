@@ -231,6 +231,11 @@ const COURSES = {
     { title:'API Design Best Practices', level:'Intermediate', duration:'4 hours', format:'Self-paced online', description:'Covers REST and API versioning conventions, documentation standards, and designing for long-term maintainability.' },
     { title:'Data Structures for Scale', level:'Advanced', duration:'7 hours', format:'Self-paced online', description:'Covers advanced data structure selection and performance trade-offs for high-throughput systems.' },
     { title:'Technical Mentorship Skills', level:'Beginner', duration:'3 hours', format:'Self-paced online', description:'Covers structured approaches to mentoring junior engineers, including code review feedback and onboarding support.' },
+    { title:'System Design Fundamentals', level:'Advanced', duration:'10 hours', format:'Self-paced online', description:'Covers designing scalable distributed systems including load balancing, caching, and database sharding strategies.' },
+    { title:'CI/CD Pipeline Mastery', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers building automated build, test, and deployment pipelines using modern DevOps tooling.' },
+    { title:'Code Review Best Practices', level:'Intermediate', duration:'4 hours', format:'Self-paced online', description:'Covers giving and receiving effective code reviews, maintaining standards, and building a healthy review culture.' },
+    { title:'Python for Data Engineering', level:'Intermediate', duration:'8 hours', format:'Self-paced online', description:'Covers Python scripting for data pipelines, automation, and ETL workflows in engineering environments.' },
+    { title:'Cloud Security Architecture', level:'Advanced', duration:'7 hours', format:'Self-paced online', description:'Covers securing cloud infrastructure, identity and access management, and compliance for production environments.' },
   ],
   finance: [
     { title:'Advanced Financial Modeling', level:'Advanced', duration:'8 hours', format:'Self-paced online', description:'Covers scenario modeling, sensitivity analysis, and building forecast models for complex business decisions.' },
@@ -241,6 +246,11 @@ const COURSES = {
     { title:'Risk Management Fundamentals', level:'Intermediate', duration:'5 hours', format:'Self-paced online', description:'Covers structured risk identification, assessment frameworks, and audit preparation practices.' },
     { title:'Excel for Finance Professionals', level:'Beginner', duration:'4 hours', format:'Self-paced online', description:'Covers advanced formulas, pivot tables, and automation techniques for finance reporting workflows.' },
     { title:'Corporate Tax Essentials', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers core corporate tax principles and compliance considerations relevant to day-to-day finance work.' },
+    { title:'Financial Statement Analysis', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers reading and interpreting income statements, balance sheets, and cash flow statements for business decisions.' },
+    { title:'SAP Finance Essentials', level:'Intermediate', duration:'7 hours', format:'Self-paced online', description:'Covers core SAP FI module workflows including general ledger, accounts payable, and financial reporting.' },
+    { title:'Compliance & Regulatory Frameworks', level:'Intermediate', duration:'5 hours', format:'Self-paced online', description:'Covers financial compliance requirements, regulatory reporting obligations, and internal control frameworks.' },
+    { title:'Negotiation Skills for Finance', level:'Beginner', duration:'4 hours', format:'Self-paced online', description:'Covers negotiation techniques for vendor contracts, budget approvals, and cross-functional finance discussions.' },
+    { title:'Financial Risk Modeling', level:'Advanced', duration:'8 hours', format:'Self-paced online', description:'Covers quantitative risk modeling techniques including value-at-risk, scenario analysis, and stress testing.' },
   ],
   itsupport: [
     { title:'Advanced Troubleshooting Techniques', level:'Advanced', duration:'6 hours', format:'Self-paced online', description:'Covers systematic diagnostic approaches for complex, recurring, and hard-to-reproduce technical issues.' },
@@ -251,6 +261,11 @@ const COURSES = {
     { title:'Incident Management Best Practices', level:'Intermediate', duration:'4 hours', format:'Self-paced online', description:'Covers prioritization frameworks and structured workflows for managing concurrent support incidents.' },
     { title:'Active Directory Administration', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers user and group provisioning, permissions structures, and everyday AD administration tasks.' },
     { title:'Technical Documentation Writing', level:'Beginner', duration:'3 hours', format:'Self-paced online', description:'Covers structuring clear, consistent internal documentation and knowledge-base articles.' },
+    { title:'Cybersecurity Fundamentals', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers core cybersecurity concepts including threat detection, endpoint protection, and security best practices.' },
+    { title:'PowerShell Scripting for IT', level:'Intermediate', duration:'5 hours', format:'Self-paced online', description:'Covers automating IT administration tasks using PowerShell scripting and task scheduling.' },
+    { title:'Virtualization with VMware', level:'Advanced', duration:'8 hours', format:'Self-paced online', description:'Covers setting up and managing virtual machines, hypervisors, and virtual networking with VMware.' },
+    { title:'Remote Support Best Practices', level:'Beginner', duration:'3 hours', format:'Self-paced online', description:'Covers tools and techniques for delivering effective remote IT support and troubleshooting.' },
+    { title:'IT Project Management', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers planning and delivering IT projects on time including scope management, risk tracking, and stakeholder updates.' },
   ],
   marketing: [
     { title:'Digital Campaign Analytics', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers measurement frameworks, attribution basics, and analyzing paid campaign performance.' },
@@ -261,6 +276,11 @@ const COURSES = {
     { title:'Brand Positioning Strategy', level:'Advanced', duration:'6 hours', format:'Self-paced online', description:'Covers frameworks for defining brand positioning and aligning campaigns with long-term brand strategy.' },
     { title:'Social Media Analytics', level:'Beginner', duration:'4 hours', format:'Self-paced online', description:'Covers tracking and interpreting social performance metrics across major platforms.' },
     { title:'Copywriting for Marketers', level:'Beginner', duration:'4 hours', format:'Self-paced online', description:'Covers writing clear, persuasive marketing copy across channels and campaign types.' },
+    { title:'Email Marketing Strategy', level:'Beginner', duration:'4 hours', format:'Self-paced online', description:'Covers building email campaigns, segmentation strategies, and optimizing open and conversion rates.' },
+    { title:'Customer Journey Mapping', level:'Intermediate', duration:'5 hours', format:'Self-paced online', description:'Covers mapping end-to-end customer experiences, identifying friction points, and aligning campaigns to journey stages.' },
+    { title:'Video Content Production', level:'Intermediate', duration:'6 hours', format:'Self-paced online', description:'Covers planning, shooting, and editing short-form video content for social media and digital campaigns.' },
+    { title:'Market Research Methods', level:'Intermediate', duration:'5 hours', format:'Self-paced online', description:'Covers qualitative and quantitative research techniques for understanding audience needs and market positioning.' },
+    { title:'Growth Hacking Fundamentals', level:'Advanced', duration:'6 hours', format:'Self-paced online', description:'Covers data-driven growth strategies including A/B testing, funnel optimization, and rapid experimentation frameworks.' },
   ],
 };
 

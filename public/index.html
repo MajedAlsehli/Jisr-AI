@@ -459,7 +459,6 @@ function addAction(text, onClick){
     if (m.classList.contains("used")) return;
     m.classList.add("used");
     onClick();
-    showToast("Interaction logged for audit");
   });
   chatBody.appendChild(m);
   chatBody.scrollTop = chatBody.scrollHeight;
@@ -470,6 +469,11 @@ const suggestions = [
   { label: "Show employees with repeated late attendance this month", needsEmployee: false, kind: "lateAttendance" },
   { label: "List requests still awaiting manager approval", needsEmployee: false, kind: "awaitingApproval" },
   { label: "Show today's approved requests", needsEmployee: false, kind: "approvedToday" },
+  { label: "Show employees ready for promotion", needsEmployee: false, kind: "promotionReady" },
+  { label: "Show top performers this quarter", needsEmployee: false, kind: "topPerformers" },
+  { label: "Show headcount by department", needsEmployee: false, kind: "headcount" },
+  { label: "Show employees missing leadership certification", needsEmployee: false, kind: "certMissing" },
+  { label: "Show employees who joined this year", needsEmployee: false, kind: "newJoiners" },
   { label: "Check an employee's attendance this quarter", needsEmployee: true, kind: "attendance" },
   { label: "Check an employee's current leave balance", needsEmployee: true, kind: "balance" },
   { label: "Check policy on an employee's recent request", needsEmployee: true, kind: "policy" },
@@ -519,7 +523,6 @@ async function triggerSuggestion(s){
       typing.remove();
       addMsg("Unable to reach the server. Please try again.", "ai");
     }
-    showToast("Interaction logged for audit");
     return;
   }
   askForEmployee(empId => answerForEmployee(s.kind, empId));
@@ -582,13 +585,12 @@ async function answerForEmployee(kind, empId){
     typing.remove();
     addMsg(data.reply || "No results found.", "ai");
     if (kind === 'policy'){
-      addAction('Flag for manager sign-off', ()=> addMsg('Request flagged for manager review. (logged)', 'ai'));
+      addAction('Flag for manager sign-off', ()=> addMsg('Request flagged for manager review.', 'ai'));
     }
   } catch(e) {
     typing.remove();
     addMsg("Unable to reach the server. Please try again.", "ai");
   }
-  showToast("Interaction logged for audit");
 }
 
 async function handleFreeText(q){

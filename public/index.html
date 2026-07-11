@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jisr AI — MVP Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B0B;
+    --gray-900:#191A21;
+    --gray-700:#373737;
+    --gray-600:#414142;
+    --gray-500:#6B6B6E;
+    --gray-100:#F4F4F5;
+    --white:#FFFFFF;
+    --line:#E5E5E7;
+    --danger:#C0392B;
+    --danger-bg:#FDEEEE;
+    --warn:#946200;
+    --warn-bg:#FFF6E1;
+    --ok:#0F7A55;
+    --ok-bg:#E9F7EF;
+    --radius-card:0.9rem;
+    --radius-sm:0.5rem;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Onest',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink);
+    background:var(--white);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  .topnav{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 32px;background:var(--white);border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .wordmark{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--ink);}
+  .brand .badge{font-size:11px;font-weight:600;letter-spacing:0.4px;padding:3px 10px;border-radius:999px;border:1px solid var(--ink);color:var(--ink);}
+  .navtabs{display:flex;gap:4px;background:var(--gray-100);padding:4px;border-radius:999px;}
+  .navtab{font-size:14px;font-weight:600;color:var(--gray-600);padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .15s ease;user-select:none;white-space:nowrap;}
+  .navtab.active{background:var(--ink);color:var(--white);}
+  .navtab:not(.active):hover{color:var(--ink);}
+  .navcta{font-size:13px;font-weight:600;color:var(--white);background:var(--ink);border:1px solid var(--ink);padding:10px 20px;border-radius:999px;cursor:default;}
+  .notif-item{padding:12px 10px;border-bottom:1px solid var(--line);}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item-msg{font-size:12.5px;color:var(--ink);line-height:1.5;font-weight:600;margin-bottom:4px;}
+  .notif-item-meta{font-size:11px;color:var(--gray-600);line-height:1.5;}
+  .notif-empty{padding:24px 16px;text-align:center;font-size:12.5px;color:var(--gray-500);}
+
+  .shell{max-width:1180px;margin:0 auto;padding:36px 32px 100px;}
+  .view{display:none;animation:fade .25s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .view-head{margin-bottom:22px;}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-600);margin-bottom:8px;}
+  .view-title{font-size:30px;font-weight:800;letter-spacing:-0.6px;margin:0 0 8px;color:var(--ink);}
+  .view-sub{font-size:15px;color:var(--gray-600);max-width:660px;line-height:1.55;margin:0;}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-card);padding:22px 24px;}
+  .pill-btn{font-family:inherit;font-weight:600;font-size:14px;padding:11px 22px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--white);cursor:pointer;transition:all .15s ease;}
+  .pill-btn:hover{background:var(--gray-600);border-color:var(--gray-600);}
+  .pill-btn.outline{background:transparent;color:var(--ink);}
+  .pill-btn.outline:hover{background:var(--gray-100);}
+  .pill-btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .pill-btn.small{padding:8px 16px;font-size:13px;}
+  .pill-btn.full{width:100%;text-align:center;}
+  .pill-btn.danger-outline{background:transparent;color:var(--danger);border-color:var(--danger);}
+  .pill-btn.danger-outline:hover{background:var(--danger-bg);}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s ease;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(11,11,11,0.5);display:none;align-items:center;justify-content:center;z-index:300;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--white);border-radius:16px;padding:32px 30px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal-box.wide{max-width:520px;text-align:left;}
+  .modal-icon{width:52px;height:52px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:0 auto 16px;}
+  .modal-title{font-size:19px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .modal-text{font-size:13.5px;color:var(--gray-600);line-height:1.55;margin-bottom:22px;white-space:pre-line;}
+  .modal-actions{display:flex;gap:10px;}
+  .modal-badges{display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap;}
+  .modal-badge{font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--gray-100);color:var(--gray-600);}
+  .modal-close-x{position:absolute;top:16px;right:18px;cursor:pointer;color:var(--gray-500);font-size:20px;line-height:1;background:none;border:none;}
+
+  .analyzing{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--gray-600);padding:22px 4px;}
+  .spinner{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:spin .7s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .select-row{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+  select{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:10px 18px;background:var(--white) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M1 1l4 4 4-4" stroke="%23414142" stroke-width="1.5" fill="none"/></svg>') no-repeat right 16px center;padding-right:34px;-webkit-appearance:none;appearance:none;cursor:pointer;outline:none;}
+  select:focus{border-color:var(--ink);}
+  select:disabled{opacity:.4;cursor:not-allowed;}
+  select.small-select{font-size:13px;padding:8px 30px 8px 14px;}
+  .empty-hint{font-size:13.5px;color:var(--gray-500);padding:30px 4px;text-align:center;border:1px dashed var(--line);border-radius:var(--radius-card);}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--gray-500);margin:26px 0 12px;}
+
+  /* ================= COPILOT ================= */
+  .copilot-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:22px;align-items:start;}
+  .queue-row{display:flex;justify-content:space-between;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line);font-size:14px;}
+  .queue-row:last-child{border-bottom:none;}
+  .queue-row .who{font-weight:600;color:var(--ink);}
+  .queue-row .what{color:var(--gray-600);font-weight:400;}
+  .tag{font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;white-space:nowrap;}
+  .tag.danger{background:var(--danger-bg);color:var(--danger);}
+  .tag.warn{background:var(--warn-bg);color:var(--warn);}
+  .tag.ok{background:var(--ok-bg);color:var(--ok);}
+
+  .chat-card{display:flex;flex-direction:column;height:560px;padding:0;overflow:hidden;}
+  .chat-head{display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid var(--line);font-weight:700;font-size:14.5px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:#2FBF71;display:inline-block;}
+  .chat-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;}
+  .msg{max-width:92%;padding:11px 14px;border-radius:14px;font-size:13.5px;line-height:1.55;}
+  .msg.user{align-self:flex-end;background:var(--ink);color:var(--white);border-bottom-right-radius:3px;max-width:88%;}
+  .msg.ai{align-self:flex-start;background:var(--gray-100);color:var(--ink);border-bottom-left-radius:3px;max-width:88%;}
+  .msg.typing{align-self:flex-start;background:var(--gray-100);color:var(--gray-500);border-bottom-left-radius:3px;font-style:italic;max-width:88%;}
+  .msg.action{align-self:flex-start;font-weight:600;font-size:12.5px;border:1px solid var(--ink);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;max-width:88%;}
+  .msg.action:hover{background:var(--ink);color:var(--white);}
+  .msg.action.used{opacity:.45;cursor:default;pointer-events:none;}
+  .msg.selector{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-radius:14px;border-bottom-left-radius:3px;padding:14px;width:100%;max-width:100%;}
+  .selector-label{font-size:12px;font-weight:700;color:var(--gray-600);margin-bottom:10px;}
+  .selector-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .selector-row select{flex:1;min-width:120px;font-size:12.5px;padding:8px 28px 8px 12px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 14px;}
+  .chip{font-size:12px;font-weight:500;color:var(--gray-600);border:1px solid var(--line);padding:7px 13px;border-radius:999px;cursor:pointer;}
+  .chip:hover{border-color:var(--ink);color:var(--ink);}
+  .chat-input-row{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--line);}
+  .chat-input-row input{flex:1;border:1px solid var(--line);border-radius:999px;padding:11px 16px;font-family:inherit;font-size:13.5px;outline:none;}
+  .chat-input-row input:focus{border-color:var(--ink);}
+  .chat-input-row button{border:none;background:var(--ink);color:var(--white);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .chat-input-row button:hover{background:var(--gray-600);}
+
+  /* ================= L&D ================= */
+  .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .rec-card{display:flex;flex-direction:column;gap:10px;}
+  .rec-card .rtitle{font-weight:700;font-size:15px;}
+  .course-link-title{display:block;color:var(--ink);text-decoration:none;}
+  .course-link-title:hover{color:var(--gray-600);text-decoration:underline;}
+  .rel-row{display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);font-weight:600;}
+  .barbg{height:5px;background:var(--gray-100);border-radius:3px;}
+  .barfill{height:5px;background:var(--ink);border-radius:3px;}
+  .reason-label{font-size:10.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--gray-600);margin-top:2px;}
+  .reason{font-size:12.5px;color:var(--gray-600);line-height:1.5;}
+  .course-link{font-size:12px;font-weight:700;color:var(--ink);text-decoration:underline;margin-top:2px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;text-align:left;}
+  .course-link:hover{color:var(--gray-600);}
+  .rec-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px;}
+  .rec-card.approved{background:var(--ok-bg);border-color:#BEE6CF;}
+  .rec-card.rejected{opacity:0.45;}
+  .status-note{font-size:12px;font-weight:700;color:var(--ok);}
+  .status-note.rejected{color:var(--danger);}
+  .pipeline-note{font-size:11.5px;color:var(--gray-500);margin:14px 0 4px;display:flex;align-items:center;gap:6px;}
+  .final-plan-item{display:flex;justify-content:space-between;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .final-plan-item:last-child{border-bottom:none;}
+  .manager-line{font-size:12px;color:var(--gray-600);margin-bottom:14px;}
+
+  /* ================= PROMOTION ================= */
+  .promo-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:start;}
+  .factor-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:9px;font-size:13.5px;}
+  .chip-status{font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;}
+  .chip-status.met{background:var(--ok-bg);color:var(--ok);}
+  .chip-status.notmet{background:var(--danger-bg);color:var(--danger);}
+  .score-card{background:var(--ink);color:var(--white);border-radius:var(--radius-card);padding:28px 24px;text-align:center;min-height:120px;display:flex;flex-direction:column;justify-content:center;}
+  .score-num{font-size:46px;font-weight:800;}
+  .score-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#B9BABE;margin-top:2px;}
+  .score-verdict{margin-top:14px;background:var(--gray-900);border-radius:var(--radius-sm);padding:11px;font-size:13px;font-weight:700;}
+  .score-verdict.ready{color:#6FE3A6;}
+  .score-verdict.notready{color:#F2A65A;}
+  .disclaimer{font-size:10.5px;color:#9A9BA1;margin-top:12px;line-height:1.5;}
+  .score-placeholder{font-size:13px;color:#9A9BA1;line-height:1.5;}
+  .note-box{background:var(--warn-bg);border:1px solid #F0DFA8;border-radius:var(--radius-sm);padding:13px 15px;font-size:12.5px;color:#7A5E13;margin-top:6px;line-height:1.5;}
+  .note-box.ready{background:var(--ok-bg);border-color:#BEE6CF;color:#0F7A55;}
+  .decision-box{margin-top:16px;}
+  .decision-confirmed{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ok);padding:10px 4px;}
+
+  @media (max-width:860px){
+    .copilot-grid,.promo-grid{grid-template-columns:1fr;}
+    .rec-grid{grid-template-columns:1fr;}
+    .navtabs{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="brand">
+    <span class="wordmark">jisr</span>
+    <span class="badge">AI ENHANCEMENT · MVP</span>
+  </div>
+  <div class="navtabs">
+    <div class="navtab active" data-view="copilot">HR Copilot</div>
+    <div class="navtab" data-view="ld">Development</div>
+    <div class="navtab" data-view="promo">Promotion Readiness</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div style="position:relative;">
+      <button id="notif-bell-btn" aria-label="Notifications" style="position:relative;background:var(--gray-100);border:1px solid var(--line);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">
+        🔔
+        <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:999px;align-items:center;justify-content:center;padding:0 4px;">0</span>
+      </button>
+      <div id="notif-panel" style="display:none;position:absolute;top:46px;right:0;width:340px;max-height:420px;overflow-y:auto;background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.15);z-index:150;">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:13.5px;">Notification Center</div>
+        <div id="notif-list" style="padding:6px;"></div>
+      </div>
+    </div>
+    <div class="navcta">HR Workspace</div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ============ VIEW 1: COPILOT ============ -->
+  <section class="view active" id="view-copilot">
+    <div class="view-head">
+      <div class="eyebrow">Feature 01</div>
+      <h1 class="view-title">AI HR Copilot</h1>
+      <p class="view-sub">Pick a question type below. If it needs a specific employee, Copilot will ask you to choose their department and name before answering.</p>
+    </div>
+    <div class="copilot-grid">
+      <div class="card">
+        <div style="font-weight:700;font-size:15px;margin-bottom:2px;">Pending Requests</div>
+        <div style="font-size:12.5px;color:var(--gray-600);margin-bottom:10px;">Queue prioritized with Copilot assistance</div>
+        <div id="queue-list"></div>
+      </div>
+      <div class="card chat-card">
+        <div class="chat-head"><span class="dot"></span> HR Copilot</div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chips" id="chat-chips"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Ask about requests, attendance, or policies…">
+          <button id="chat-send" aria-label="Send">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW 2: L&D ============ -->
+  <section class="view" id="view-ld">
+    <div class="view-head">
+      <div class="eyebrow">Feature 02</div>
+      <h1 class="view-title">AI Learning &amp; Development Recommendations</h1>
+      <p class="view-sub">AI generates personalized course recommendations, which HR reviews first, then forwards to the employee's manager. The employee only ever sees recommendations after both have reviewed them.</p>
+    </div>
+    <div class="select-row">
+      <select id="ld-division-select">
+        <option value="">Select department…</option>
+      </select>
+      <select id="ld-employee-select" disabled>
+        <option value="">Select employee…</option>
+      </select>
+    </div>
+    <div id="ld-rec-area">
+      <div class="empty-hint">Select a department, then an employee, to generate AI development recommendations.</div>
+    </div>
+    <div id="ld-manager-area"></div>
+    <div id="ld-final-area"></div>
+  </section>
+
+  <!-- ============ VIEW 3: PROMOTION ============ -->
+  <section class="view" id="view-promo">
+    <div class="view-head">
+      <div class="eyebrow">Feature 03</div>
+      <h1 class="view-title">AI Promotion Readiness Predictor</h1>
+      <p class="view-sub">A transparent readiness score built from policy criteria and employee records. This is decision support — the outcome always goes to the employee's manager, never to the employee directly.</p>
+    </div>
+    <div class="select-row">
+      <select id="promo-division-select">
+        <option value="">Select department…</option>
+      </select>
+      <select id="promo-employee-select" disabled>
+        <option value="">Select employee…</option>
+      </select>
+    </div>
+    <div id="promo-body-area">
+      <div class="empty-hint">Select a department, then an employee, to generate a promotion readiness score.</div>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Generic info/confirmation modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon">✓</div>
+    <div class="modal-title" id="modal-title">Approval Complete</div>
+    <div class="modal-text" id="modal-text">The approved development plan has been presented to the employee.</div>
+    <button class="pill-btn full" id="modal-close-btn">Close</button>
+  </div>
+</div>
+
+<!-- Confirm (Yes/Cancel) modal -->
+<div class="modal-overlay" id="confirm-modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="confirm-modal-title">Approve this course?</div>
+    <div class="modal-text" id="confirm-modal-text">Are you sure you want to approve this course?</div>
+    <div class="modal-actions">
+      <button class="pill-btn outline full" id="confirm-modal-cancel">Cancel</button>
+      <button class="pill-btn full" id="confirm-modal-yes">Yes, Approve</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function el(tag, className, html){
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+/* ============================================================
+   TOAST + MODALS
+   ============================================================ */
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.remove("show"), 2800);
+}
+function showModal(title, text){
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-text").textContent = text;
+  document.getElementById("modal-overlay").classList.add("show");
+}
+document.getElementById("modal-close-btn").addEventListener("click", ()=>{
+  document.getElementById("modal-overlay").classList.remove("show");
+});
+
+/* ============================================================
+   NOTIFICATION CENTER
+   ============================================================ */
+function renderNotifications(notifications){
+  const badge = document.getElementById("notif-badge");
+  const list = document.getElementById("notif-list");
+  if (!notifications || notifications.length === 0){
+    badge.style.display = "none";
+    list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
+    return;
+  }
+  badge.style.display = "flex";
+  badge.textContent = notifications.length;
+  list.innerHTML = "";
+  notifications.forEach(n=>{
+    const item = document.createElement("div");
+    item.className = "notif-item";
+    item.innerHTML = `<div class="notif-item-msg">${n.message}</div><div class="notif-item-meta">${n.meta || ''}</div>`;
+    list.appendChild(item);
+  });
+}
+
+async function loadNotifications(){
+  try {
+    const res = await fetch('/api/notifications');
+    const data = await res.json();
+    renderNotifications(data);
+  } catch(e) {
+    renderNotifications([]);
+  }
+}
+
+const notifBellBtn = document.getElementById("notif-bell-btn");
+const notifPanel = document.getElementById("notif-panel");
+notifBellBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  notifPanel.style.display = notifPanel.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", (e)=>{
+  if (!notifPanel.contains(e.target) && e.target !== notifBellBtn){
+    notifPanel.style.display = "none";
+  }
+});
+
+let __confirmYesHandler = null;
+function showConfirmModal(title, text, onYes){
+  document.getElementById("confirm-modal-title").textContent = title;
+  document.getElementById("confirm-modal-text").textContent = text;
+  document.getElementById("confirm-modal-overlay").classList.add("show");
+  __confirmYesHandler = onYes;
+}
+document.getElementById("confirm-modal-cancel").addEventListener("click", ()=>{
+  document.getElementById("confirm-modal-overlay").classList.remove("show");
+  __confirmYesHandler = null;
+});
+document.getElementById("confirm-modal-yes").addEventListener("click", ()=>{
+  document.getElementById("confirm-modal-overlay").classList.remove("show");
+  if (__confirmYesHandler) __confirmYesHandler();
+  __confirmYesHandler = null;
+});
+
+/* ============================================================
+   NAV SWITCHING
+   ============================================================ */
+document.querySelectorAll(".navtab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".navtab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("view-"+tab.dataset.view).classList.add("active");
+  });
+});
+
+/* ============================================================
+   FEATURE 1 — COPILOT
+   ============================================================ */
+async function renderQueue(){
+  const list = document.getElementById("queue-list");
+  try {
+    const res = await fetch('/api/requests');
+    const rows = await res.json();
+    list.innerHTML = "";
+    if (!rows.length){
+      list.innerHTML = '<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">No pending requests in queue.</div>';
+      return;
+    }
+    rows.forEach(r=>{
+      const tagClass = r.status==="overdue" ? "danger" : r.status==="policy" ? "warn" : "ok";
+      const tagText = r.status==="overdue" ? `Overdue ${r.days}d` : r.status==="policy" ? "Policy check needed" : "Ready to approve";
+      const row = document.createElement("div");
+      row.className = "queue-row";
+      row.innerHTML = `<span><span class="who">${r.what}</span> <span class="what">— ${r.who}</span></span><span class="tag ${tagClass}">${tagText}</span>`;
+      list.appendChild(row);
+    });
+  } catch(e) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">Unable to load queue.</div>';
+  }
+}
+
+const chatInput = document.getElementById("chat-input");
+const chatSend = document.getElementById("chat-send");
+const chatBody = document.getElementById("chat-body");
+const chatChips = document.getElementById("chat-chips");
+
+function addMsg(text, who){
+  const m = document.createElement("div");
+  m.className = "msg " + who;
+  m.textContent = text;
+  chatBody.appendChild(m);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  return m;
+}
+function addAction(text, onClick){
+  const m = document.createElement("div");
+  m.className = "msg action";
+  m.textContent = "→ " + text;
+  m.addEventListener("click", ()=>{
+    if (m.classList.contains("used")) return;
+    m.classList.add("used");
+    onClick();
+    showToast("Interaction logged for audit");
+  });
+  chatBody.appendChild(m);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+const suggestions = [
+  { label: "Show pending requests older than 3 days", needsEmployee: false, kind: "pending" },
+  { label: "Show employees with repeated late attendance this month", needsEmployee: false, kind: "lateAttendance" },
+  { label: "List requests still awaiting manager approval", needsEmployee: false, kind: "awaitingApproval" },
+  { label: "Show today's approved requests", needsEmployee: false, kind: "approvedToday" },
+  { label: "Check an employee's attendance this quarter", needsEmployee: true, kind: "attendance" },
+  { label: "Check an employee's current leave balance", needsEmployee: true, kind: "balance" },
+  { label: "Check policy on an employee's recent request", needsEmployee: true, kind: "policy" },
+  { label: "Check who an employee's manager is", needsEmployee: true, kind: "manager" },
+  { label: "Check an employee's tenure in their current role", needsEmployee: true, kind: "tenure" },
+];
+
+function renderChips(){
+  chatChips.innerHTML = "";
+  const visible = suggestions.slice(0, 4);
+  const overflow = suggestions.slice(4);
+  visible.forEach(s=>{
+    const c = document.createElement("div");
+    c.className = "chip";
+    c.textContent = s.label;
+    c.addEventListener("click", ()=> triggerSuggestion(s));
+    chatChips.appendChild(c);
+  });
+  if (overflow.length){
+    const sel = document.createElement("select");
+    sel.className = "small-select";
+    sel.style.maxWidth = "220px";
+    sel.innerHTML = `<option value="">More questions…</option>` +
+      overflow.map((s,i)=>`<option value="${i}">${s.label}</option>`).join("");
+    sel.addEventListener("change", ()=>{
+      if (sel.value === "") return;
+      triggerSuggestion(overflow[parseInt(sel.value, 10)]);
+      sel.value = "";
+    });
+    chatChips.appendChild(sel);
+  }
+}
+
+async function triggerSuggestion(s){
+  addMsg(s.label, "user");
+  if (!s.needsEmployee){
+    const typing = addMsg("Searching records…", "typing");
+    try {
+      const res = await fetch('/api/copilot/chat', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ kind: s.kind })
+      });
+      const data = await res.json();
+      typing.remove();
+      addMsg(data.reply || "No results found.", "ai");
+    } catch(e) {
+      typing.remove();
+      addMsg("Unable to reach the server. Please try again.", "ai");
+    }
+    showToast("Interaction logged for audit");
+    return;
+  }
+  askForEmployee(empId => answerForEmployee(s.kind, empId));
+}
+
+function askForEmployee(onDone){
+  const wrap = document.createElement("div");
+  wrap.className = "msg selector";
+  wrap.innerHTML = `
+    <div class="selector-label">Which employee is this about?</div>
+    <div class="selector-row">
+      <select class="small-select" data-role="dept"><option value="">Department…</option></select>
+      <select class="small-select" data-role="emp" disabled><option value="">Employee…</option></select>
+    </div>
+    <button class="pill-btn small" data-role="go" disabled>Continue</button>
+  `;
+  chatBody.appendChild(wrap);
+  chatBody.scrollTop = chatBody.scrollHeight;
+
+  const deptSel = wrap.querySelector('[data-role="dept"]');
+  const empSel = wrap.querySelector('[data-role="emp"]');
+  const goBtn = wrap.querySelector('[data-role="go"]');
+
+  (window.__depts || []).forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d.key; opt.textContent = d.label;
+    deptSel.appendChild(opt);
+  });
+  deptSel.addEventListener("change", ()=>{
+    empSel.innerHTML = '<option value="">Employee…</option>';
+    goBtn.disabled = true;
+    if (!deptSel.value){ empSel.disabled = true; return; }
+    const dept = (window.__depts || []).find(d=>d.key===deptSel.value);
+    (dept ? dept.employees : []).forEach(e=>{
+      const opt = document.createElement("option");
+      opt.value = e.id; opt.textContent = `${e.first_name} ${e.last_name}`;
+      empSel.appendChild(opt);
+    });
+    empSel.disabled = false;
+  });
+  empSel.addEventListener("change", ()=>{ goBtn.disabled = !empSel.value; });
+  goBtn.addEventListener("click", ()=>{
+    const empId = empSel.value;
+    const dept = (window.__depts || []).find(d=>d.key===deptSel.value);
+    const emp = dept && dept.employees.find(e=>String(e.id)===String(empId));
+    const empName = emp ? `${emp.first_name} ${emp.last_name}` : 'Selected employee';
+    wrap.innerHTML = `<div class="selector-label" style="margin-bottom:0;">Selected: <strong>${empName}</strong></div>`;
+    onDone(empId);
+  });
+}
+
+async function answerForEmployee(kind, empId){
+  const typing = addMsg("Searching records…", "typing");
+  try {
+    const res = await fetch('/api/copilot/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ kind, empId })
+    });
+    const data = await res.json();
+    typing.remove();
+    addMsg(data.reply || "No results found.", "ai");
+    if (kind === 'policy'){
+      addAction('Flag for manager sign-off', ()=> addMsg('Request flagged for manager review. (logged)', 'ai'));
+    }
+  } catch(e) {
+    typing.remove();
+    addMsg("Unable to reach the server. Please try again.", "ai");
+  }
+  showToast("Interaction logged for audit");
+}
+
+async function handleFreeText(q){
+  addMsg(q, "user");
+  const typing = addMsg("Thinking…", "typing");
+  try {
+    const res = await fetch('/api/copilot/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ kind:'freetext', question: q })
+    });
+    const data = await res.json();
+    typing.remove();
+    if (data.needsEmployee){
+      addMsg("I need to know which employee you mean. Please select one:", "ai");
+      askForEmployee(empId => answerForEmployee(data.suggestedIntent || 'policy', empId));
+    } else {
+      addMsg(data.reply || "No results found.", "ai");
+    }
+  } catch(e) {
+    typing.remove();
+    addMsg("Unable to reach the server. Please try again.", "ai");
+  }
+}
+
+chatSend.addEventListener("click", ()=>{
+  if (!chatInput.value.trim()) return;
+  handleFreeText(chatInput.value.trim());
+  chatInput.value = "";
+});
+chatInput.addEventListener("keydown", (e)=>{
+  if (e.key === "Enter") chatSend.click();
+});
+
+/* ============================================================
+   FEATURE 2 — L&D RECOMMENDATIONS
+   ============================================================ */
+const divSelect = document.getElementById("ld-division-select");
+const empSelect = document.getElementById("ld-employee-select");
+let ldCurrentEmpId = null;
+let ldCurrentRecs = [];
+let ldCurrentEmpName = '';
+let ldCurrentManagerName = '';
+let followUpTimer = null;
+let forwardedAt = null;
+
+divSelect.addEventListener("change", ()=>{
+  const deptKey = divSelect.value;
+  empSelect.innerHTML = '<option value="">Select employee…</option>';
+  document.getElementById("ld-rec-area").innerHTML = '<div class="empty-hint">Select an employee to generate AI development recommendations.</div>';
+  document.getElementById("ld-manager-area").innerHTML = "";
+  document.getElementById("ld-final-area").innerHTML = "";
+  if (followUpTimer){ clearTimeout(followUpTimer); followUpTimer = null; }
+  ldCurrentEmpId = null;
+  if (!deptKey){ empSelect.disabled = true; return; }
+  const dept = (window.__depts || []).find(d=>d.key===deptKey);
+  (dept ? dept.employees : []).forEach(e=>{
+    const opt = document.createElement("option");
+    opt.value = e.id; opt.textContent = `${e.first_name} ${e.last_name}`;
+    empSelect.appendChild(opt);
+  });
+  empSelect.disabled = false;
+});
+
+empSelect.addEventListener("change", async ()=>{
+  const empId = empSelect.value;
+  document.getElementById("ld-manager-area").innerHTML = "";
+  document.getElementById("ld-final-area").innerHTML = "";
+  if (followUpTimer){ clearTimeout(followUpTimer); followUpTimer = null; }
+  if (!empId){ return; }
+  ldCurrentEmpId = empId;
+
+  const deptKey = divSelect.value;
+  const dept = (window.__depts || []).find(d=>d.key===deptKey);
+  const empObj = dept && dept.employees.find(e=>String(e.id)===String(empId));
+  ldCurrentEmpName = empObj ? `${empObj.first_name} ${empObj.last_name}` : 'Employee';
+
+  const area = document.getElementById("ld-rec-area");
+  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> AI analyzing ${ldCurrentEmpName}'s performance, skill gaps, and career trajectory…</div>`;
+
+  try {
+    const res = await fetch(`/api/recommendations/${empId}`);
+    const data = await res.json();
+    ldCurrentRecs = data;
+
+    // Get manager name from first rec's context or from dept
+    if (data.length > 0) {
+      // Manager name comes from employee data via dept
+      const deptObj = (window.__depts || []).find(d=>d.key===deptKey);
+      ldCurrentManagerName = deptObj ? deptObj.manager_name : '';
+    }
+    renderHRReview(empId, data);
+  } catch(e) {
+    area.innerHTML = '<div class="empty-hint">Unable to load recommendations. Please try again.</div>';
+  }
+});
+
+function renderHRReview(empId, recs){
+  const area = document.getElementById("ld-rec-area");
+  area.innerHTML = "";
+  area.appendChild(el("div", "section-label", "AI Recommendations — Pending HR Review"));
+  const grid = document.createElement("div");
+  grid.className = "rec-grid";
+
+  recs.forEach(rec=>{
+    const state = rec.hrStatus;
+    const card = document.createElement("div");
+    card.className = "card rec-card" + (state==="approved" ? " approved" : state==="rejected" ? " rejected" : "");
+    card.innerHTML = `
+      <a class="rtitle course-link-title" href="https://www.coursera.org/search?query=${encodeURIComponent(rec.courseTitle)}" target="_blank" rel="noopener">${rec.courseTitle} ↗</a>
+      <div class="rel-row"><span>Relevance to role</span><span>${rec.rel}</span></div>
+      <div class="barbg"><div class="barfill" style="width:${rec.relevancePct}%;"></div></div>
+      <div class="reason-label">Why recommended</div>
+      <div class="reason">${rec.aiRationale || ''}</div>
+      ${state==="approved"
+        ? `<div class="status-note">✓ Approved by HR</div>`
+        : state==="rejected"
+        ? `<div class="status-note rejected">✕ Rejected by HR</div>`
+        : `<div class="rec-actions">
+             <button class="pill-btn small" data-approve="${rec.id}">Approve</button>
+             <button class="pill-btn danger-outline small" data-reject="${rec.id}">Reject</button>
+           </div>`
+      }
+    `;
+    grid.appendChild(card);
+  });
+  area.appendChild(grid);
+
+  const allReviewed = recs.every(r=> r.hrStatus === "approved" || r.hrStatus === "rejected");
+  const anyApproved = recs.some(r=> r.hrStatus === "approved");
+  const footer = document.createElement("div");
+  footer.style.marginTop = "18px";
+  if (allReviewed){
+    footer.innerHTML = anyApproved
+      ? `<button class="pill-btn" id="forward-manager-btn">Forward HR Decision to ${ldCurrentManagerName} →</button>`
+      : `<div class="empty-hint">All recommendations were rejected by HR — nothing to forward to the manager.</div>`;
+  } else {
+    footer.innerHTML = `<div class="pipeline-note">Approve or reject every recommendation to continue.</div>`;
+  }
+  area.appendChild(footer);
+
+  grid.querySelectorAll("[data-approve]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const recId = btn.dataset.approve;
+      const rec = recs.find(r=>String(r.id)===String(recId));
+      showConfirmModal(
+        "Approve this course?",
+        `Are you sure you want to approve "${rec ? rec.courseTitle : 'this course'}" for ${ldCurrentEmpName}?`,
+        async ()=>{
+          try {
+            await fetch(`/api/recommendations/${recId}/approve`, { method:'PUT' });
+            const updated = await fetch(`/api/recommendations/${empId}`);
+            const newRecs = await updated.json();
+            ldCurrentRecs = newRecs;
+            renderHRReview(empId, newRecs);
+          } catch(e){ showToast("Error approving course."); }
+        }
+      );
+    });
+  });
+  grid.querySelectorAll("[data-reject]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const recId = btn.dataset.reject;
+      try {
+        await fetch(`/api/recommendations/${recId}/reject`, { method:'PUT' });
+        const updated = await fetch(`/api/recommendations/${empId}`);
+        const newRecs = await updated.json();
+        ldCurrentRecs = newRecs;
+        renderHRReview(empId, newRecs);
+      } catch(e){ showToast("Error rejecting course."); }
+    });
+  });
+
+  const fwdBtn = document.getElementById("forward-manager-btn");
+  if (fwdBtn) fwdBtn.addEventListener("click", async ()=>{
+    try {
+      const res = await fetch('/api/recommendations/forward', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ empId })
+      });
+      const data = await res.json();
+      forwardedAt = Date.now();
+      showToast(`HR decision forwarded to ${ldCurrentManagerName} (Request ${data.requestRef})`);
+      const approvedRecs = ldCurrentRecs.filter(r=>r.hrStatus==="approved");
+      renderManagerReview(empId, approvedRecs, data.requestRef);
+      await loadNotifications();
+
+      if (followUpTimer) clearTimeout(followUpTimer);
+      const requestRefAtSchedule = data.requestRef;
+      followUpTimer = setTimeout(async ()=>{
+        const elapsed = Math.round((Date.now() - forwardedAt) / 1000);
+        const msg = "Reminder: Please follow up on the employee's development plan. The request has been pending for the defined SLA period.";
+        const meta = `Employee: ${ldCurrentEmpName} · Request ID: ${requestRefAtSchedule} · Pending: ${elapsed}s`;
+        await fetch('/api/notifications', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ message: msg, meta })
+        });
+        await loadNotifications();
+        followUpTimer = null;
+      }, 30000);
+    } catch(e){ showToast("Error forwarding to manager."); }
+  });
+}
+
+function renderManagerReview(empId, approvedRecs, requestRef){
+  const area = document.getElementById("ld-manager-area");
+  area.innerHTML = "";
+  area.appendChild(el("div", "section-label", "Pending Manager Review"));
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div style="font-weight:700;font-size:15px;margin-bottom:4px;">HR-approved courses for ${ldCurrentEmpName}</div>
+    <div class="manager-line">Reviewing as <strong>${ldCurrentManagerName}</strong>, ${ldCurrentEmpName}'s manager. Confirm to present this plan directly to them.${requestRef ? ` <br>Request ID: ${requestRef}` : ""}</div>
+  `;
+  approvedRecs.forEach(rec=>{
+    const row = document.createElement("div");
+    row.className = "final-plan-item";
+    row.innerHTML = `<span>${rec.courseTitle}</span><span style="color:var(--gray-600);">${rec.rel} relevance</span>`;
+    card.appendChild(row);
+  });
+  const btnWrap = document.createElement("div");
+  btnWrap.style.marginTop = "16px";
+  btnWrap.innerHTML = `<button class="pill-btn full" id="present-employee-btn">Present Approved Recommendations to ${ldCurrentEmpName} →</button>`;
+  card.appendChild(btnWrap);
+  area.appendChild(card);
+
+  document.getElementById("present-employee-btn").addEventListener("click", async ()=>{
+    if (followUpTimer){ clearTimeout(followUpTimer); followUpTimer = null; }
+    try {
+      for (const rec of approvedRecs){
+        await fetch(`/api/recommendations/${rec.id}/present`, { method:'PUT' });
+      }
+      showModal("Approval Complete", `${ldCurrentManagerName} has presented ${ldCurrentEmpName}'s development plan and the approval process (AI → HR → Manager → Employee) is now complete.`);
+      renderFinalPlan(approvedRecs);
+      area.innerHTML = "";
+      await loadNotifications();
+    } catch(e){ showToast("Error marking as presented."); }
+  });
+}
+
+function renderFinalPlan(approvedRecs){
+  const area = document.getElementById("ld-final-area");
+  area.innerHTML = "";
+  area.appendChild(el("div", "section-label", "Confirmed Development Plan"));
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<div style="font-weight:700;font-size:15px;margin-bottom:10px;">${ldCurrentEmpName} — presented by ${ldCurrentManagerName}</div>`;
+  approvedRecs.forEach(rec=>{
+    const row = document.createElement("div");
+    row.className = "final-plan-item";
+    row.innerHTML = `<span>${rec.courseTitle}</span><span style="color:var(--ok);font-weight:700;">✓ Confirmed</span>`;
+    card.appendChild(row);
+  });
+  area.appendChild(card);
+}
+
+/* ============================================================
+   FEATURE 3 — PROMOTION READINESS
+   ============================================================ */
+const promoDivSelect = document.getElementById("promo-division-select");
+const promoEmpSelect = document.getElementById("promo-employee-select");
+
+promoDivSelect.addEventListener("change", ()=>{
+  const deptKey = promoDivSelect.value;
+  promoEmpSelect.innerHTML = '<option value="">Select employee…</option>';
+  document.getElementById("promo-body-area").innerHTML = '<div class="empty-hint">Select an employee to generate a promotion readiness score.</div>';
+  if (!deptKey){ promoEmpSelect.disabled = true; return; }
+  const dept = (window.__depts || []).find(d=>d.key===deptKey);
+  (dept ? dept.employees : []).forEach(e=>{
+    const opt = document.createElement("option");
+    opt.value = e.id; opt.textContent = `${e.first_name} ${e.last_name}`;
+    promoEmpSelect.appendChild(opt);
+  });
+  promoEmpSelect.disabled = false;
+});
+
+promoEmpSelect.addEventListener("change", async ()=>{
+  const empId = promoEmpSelect.value;
+  const area = document.getElementById("promo-body-area");
+  if (!empId){ area.innerHTML = '<div class="empty-hint">Select an employee to generate a promotion readiness score.</div>'; return; }
+
+  const deptKey = promoDivSelect.value;
+  const dept = (window.__depts || []).find(d=>d.key===deptKey);
+  const empObj = dept && dept.employees.find(e=>String(e.id)===String(empId));
+  const empName = empObj ? `${empObj.first_name} ${empObj.last_name}` : 'Employee';
+
+  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> AI analyzing ${empName}'s performance, tenure, and policy criteria…</div>`;
+
+  try {
+    const res = await fetch(`/api/promotion/${empId}`);
+    const data = await res.json();
+    renderPromo(empId, data);
+  } catch(e) {
+    area.innerHTML = '<div class="empty-hint">Unable to load promotion data. Please try again.</div>';
+  }
+});
+
+function renderPromo(empId, data){
+  const area = document.getElementById("promo-body-area");
+  area.innerHTML = `
+    <div class="promo-grid">
+      <div>
+        <div id="factor-list"></div>
+        <div id="promo-note"></div>
+        <div class="decision-box" id="decision-box"></div>
+      </div>
+      <div class="score-card" id="score-card"></div>
+    </div>
+  `;
+  const list = document.getElementById("factor-list");
+  data.factors.forEach(f=>{
+    const row = document.createElement("div");
+    row.className = "factor-row";
+    row.innerHTML = `<span>${f.label}</span><span class="chip-status ${f.met?"met":"notmet"}">${f.met?"Met":"Not met"}</span>`;
+    list.appendChild(row);
+  });
+  const ready = data.ready;
+  document.getElementById("score-card").innerHTML = `
+    <div class="score-num">${data.score}%</div>
+    <div class="score-label">Promotion Readiness Score</div>
+    <div class="score-verdict ${ready?"ready":"notready"}">${ready?"Ready for committee review":"Not yet ready for review"}</div>
+    <div class="disclaimer">This score is a decision-support estimate. The outcome is always routed to ${data.empName}'s manager, never to the employee directly.</div>
+  `;
+  document.getElementById("promo-note").innerHTML = `<div class="note-box ${ready?"ready":""}">${data.note}</div>`;
+  const decisionBox = document.getElementById("decision-box");
+  decisionBox.innerHTML = ready
+    ? `<button class="pill-btn full" id="decision-btn">Forward to ${data.managerName} for Promotion Committee Review →</button>`
+    : `<button class="pill-btn outline full" id="decision-btn">Send Development Feedback to ${data.managerName}</button>`;
+  document.getElementById("decision-btn").addEventListener("click", async ()=>{
+    try {
+      await fetch(`/api/promotion/${empId}/forward`, { method:'POST' });
+      decisionBox.innerHTML = ready
+        ? `<div class="decision-confirmed">✓ Sent to ${data.managerName} (${data.empName}'s manager) for committee review</div>`
+        : `<div class="decision-confirmed">✓ Development feedback sent to ${data.managerName}</div>`;
+      showToast(ready ? `Sent to ${data.managerName} for committee review` : `Feedback sent to ${data.managerName}`);
+      await loadNotifications();
+    } catch(e){ showToast("Error forwarding result."); }
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+  try {
+    const res = await fetch('/api/departments');
+    window.__depts = await res.json();
+
+    window.__depts.forEach(d=>{
+      const o1 = document.createElement('option');
+      o1.value = d.key; o1.textContent = d.label;
+      divSelect.appendChild(o1);
+
+      const o2 = document.createElement('option');
+      o2.value = d.key; o2.textContent = d.label;
+      promoDivSelect.appendChild(o2);
+    });
+  } catch(e){
+    window.__depts = [];
+    console.error('Failed to load departments', e);
+  }
+
+  await renderQueue();
+  await loadNotifications();
+  addMsg("Hi, I'm your HR Copilot. Pick a question type below to get started.", "ai");
+  renderChips();
+})();
+</script>
+</body>
+</html>

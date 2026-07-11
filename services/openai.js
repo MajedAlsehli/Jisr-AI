@@ -246,4 +246,28 @@ Write the briefing now:`;
   }
 }
 
-module.exports = { generatePromoNote, generateRecRationale, classifyIntent, generateChatReply, generateEmployeeSummary };
+async function generateSmartFallback(question, empName) {
+  try {
+    const context = empName
+      ? `The HR officer is currently viewing ${empName}'s profile.`
+      : '';
+    const prompt = `You are an AI HR Copilot. An HR officer said: "${question}"
+${context}
+
+You can help with: attendance records, leave balances, manager lookups, employee tenure, promotion readiness, top performers, headcount by department, burnout risk, open headcount requests, turnover/exit data, disciplinary records, HR policies (leave, overtime, expense, attendance), and full AI employee briefings.
+
+Respond in 1-2 natural sentences. If there is an employee in context, ask what they want to know about that person. If the question hints at something you can help with, guide them there. If the question is genuinely outside HR, say so briefly. Never list every capability — just respond naturally to what they actually said.`;
+
+    const res = await getClient().chat.completions.create({
+      model: MODEL(),
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 100,
+    });
+    return res.choices[0].message.content.trim();
+  } catch (e) {
+    if (empName) return `I can see you're asking about ${empName} — what would you like to know? I can check their attendance, leave balance, manager, tenure, or generate a full briefing.`;
+    return "I can help with attendance, leave balances, promotion readiness, HR policies, headcount, and more. What would you like to check?";
+  }
+}
+
+module.exports = { generatePromoNote, generateRecRationale, classifyIntent, generateChatReply, generateEmployeeSummary, generateSmartFallback };

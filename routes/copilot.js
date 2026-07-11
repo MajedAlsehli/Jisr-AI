@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { classifyIntent, generateChatReply, generateEmployeeSummary } = require('../services/openai');
+const { classifyIntent, generateChatReply, generateEmployeeSummary, generateSmartFallback } = require('../services/openai');
 
 const ORG_WIDE_INTENTS = ['pending','lateAttendance','awaitingApproval','approvedToday',
   'promotionReady','promotionNotReady','topPerformers','headcount','certMissing','newJoiners',
@@ -438,20 +438,13 @@ router.post('/chat', async (req, res) => {
       kind = classified.intent;
 
       if (kind === 'unknown') {
+        let empName = null;
         if (empId) {
           const empRow = await db.query('SELECT first_name, last_name FROM employees WHERE id = $1', [empId]);
-          if (empRow.rows.length) {
-            const n = `${empRow.rows[0].first_name} ${empRow.rows[0].last_name}`;
-            return res.json({
-              reply: `I'm currently looking at ${n}. What would you like to know? I can check their attendance, leave balance, manager, tenure, or generate a full AI briefing.`,
-              needsEmployee: false,
-            });
-          }
+          if (empRow.rows.length) empName = `${empRow.rows[0].first_name} ${empRow.rows[0].last_name}`;
         }
-        return res.json({
-          reply: "I can help with attendance, leave balances, manager lookups, promotion readiness, burnout risk, headcount, turnover, and more. For policies, ask about 'leave policy', 'overtime policy', 'expense policy', or 'attendance policy'. Try one of the suggestion chips, or type what you'd like to check.",
-          needsEmployee: false,
-        });
+        const reply = await generateSmartFallback(question, empName);
+        return res.json({ reply, needsEmployee: false });
       }
 
       const EMP_INTENTS = ['attendance','balance','policy','manager','tenure','employeeSummary'];

@@ -197,12 +197,13 @@
   .followup-chip:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
 
   /* ================= LANG TOGGLE ================= */
-  .lang-btn{font-size:13px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--gray-100);cursor:pointer;transition:all .15s;letter-spacing:0.3px;}
+  .lang-btn{background:var(--gray-100);border:1px solid var(--line);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .15s;letter-spacing:0.5px;padding:0;flex-shrink:0;}
   .lang-btn:hover{border-color:var(--ink);}
   .lang-btn.ar{background:var(--ink);color:var(--white);border-color:var(--ink);}
   .chat-body.rtl{direction:rtl;text-align:right;}
   .chat-body.rtl .msg.user{align-self:flex-start;background:var(--ink);color:var(--white);}
   .chat-body.rtl .msg.ai{align-self:flex-end;background:var(--gray-100);}
+
 
   @media (max-width:860px){
     .copilot-grid,.promo-grid{grid-template-columns:1fr;}
@@ -224,8 +225,7 @@
     <div class="navtab" data-view="ld">Development</div>
     <div class="navtab" data-view="promo">Promotion Readiness</div>
   </div>
-  <div style="display:flex;align-items:center;gap:14px;">
-    <button id="lang-toggle" class="lang-btn">عربي</button>
+  <div style="display:flex;align-items:center;gap:10px;">
     <div style="position:relative;">
       <button id="notif-bell-btn" aria-label="Notifications" style="position:relative;background:var(--gray-100);border:1px solid var(--line);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">
         🔔
@@ -236,6 +236,7 @@
         <div id="notif-list" style="padding:6px;"></div>
       </div>
     </div>
+    <button id="lang-toggle" class="lang-btn">AR</button>
     <div class="navcta">HR Workspace</div>
   </div>
 </div>
@@ -557,7 +558,7 @@ const langToggleBtn = document.getElementById('lang-toggle');
 langToggleBtn.addEventListener('click', () => {
   window.__lang = window.__lang === 'en' ? 'ar' : 'en';
   const isAr = window.__lang === 'ar';
-  langToggleBtn.textContent = isAr ? 'English' : 'عربي';
+  langToggleBtn.textContent = isAr ? 'EN' : 'AR';
   langToggleBtn.classList.toggle('ar', isAr);
   chatBody.classList.toggle('rtl', isAr);
   chatInput.placeholder = isAr

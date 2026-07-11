@@ -6,7 +6,7 @@
 <title>Jisr AI — MVP Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0B0B0B;
@@ -29,7 +29,7 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:'Onest',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-family:'Onest','Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     color:var(--ink);
     background:var(--white);
     -webkit-font-smoothing:antialiased;
@@ -204,6 +204,28 @@
   .chat-body.rtl .msg.user{align-self:flex-start;background:var(--ink);color:var(--white);}
   .chat-body.rtl .msg.ai{align-self:flex-end;background:var(--gray-100);}
 
+  /* ================= RTL FULL PAGE ================= */
+  body.rtl{direction:rtl;font-family:'Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+  body.rtl .topnav{flex-direction:row-reverse;}
+  body.rtl .navtabs{flex-direction:row-reverse;}
+  body.rtl .select-row{flex-direction:row-reverse;}
+  body.rtl .view-head{text-align:right;}
+  body.rtl .eyebrow,.body.rtl .view-title,.body.rtl .view-sub{text-align:right;}
+  body.rtl .rec-card{text-align:right;}
+  body.rtl .factor-row{flex-direction:row-reverse;}
+  body.rtl .score-card{direction:rtl;}
+  body.rtl .queue-row{flex-direction:row-reverse;}
+  body.rtl .modal-box{direction:rtl;text-align:right;}
+  body.rtl .modal-actions{flex-direction:row-reverse;}
+  body.rtl .section-label{text-align:right;}
+  body.rtl .rel-row{flex-direction:row-reverse;}
+  body.rtl .chat-input-row input{text-align:right;direction:rtl;}
+  body.rtl .chips,.body.rtl .followup-chips{flex-direction:row-reverse;}
+  body.rtl .card{text-align:right;}
+  body.rtl .manager-line,.body.rtl .pipeline-note{text-align:right;}
+  body.rtl .final-plan-item{flex-direction:row-reverse;}
+  body.rtl .brand{flex-direction:row-reverse;}
+
 
   @media (max-width:860px){
     .copilot-grid,.promo-grid{grid-template-columns:1fr;}
@@ -218,12 +240,12 @@
 <div class="topnav">
   <div class="brand">
     <span class="wordmark">jisr</span>
-    <span class="badge">AI ENHANCEMENT · MVP</span>
+    <span class="badge" data-i18n="badge">AI ENHANCEMENT · MVP</span>
   </div>
   <div class="navtabs">
-    <div class="navtab active" data-view="copilot">HR Copilot</div>
-    <div class="navtab" data-view="ld">Development</div>
-    <div class="navtab" data-view="promo">Promotion Readiness</div>
+    <div class="navtab active" data-view="copilot" data-i18n="navCopilot">HR Copilot</div>
+    <div class="navtab" data-view="ld" data-i18n="navDev">Development</div>
+    <div class="navtab" data-view="promo" data-i18n="navPromo">Promotion Readiness</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <div style="position:relative;">
@@ -232,12 +254,12 @@
         <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:999px;align-items:center;justify-content:center;padding:0 4px;">0</span>
       </button>
       <div id="notif-panel" style="display:none;position:absolute;top:46px;right:0;width:340px;max-height:420px;overflow-y:auto;background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.15);z-index:150;">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:13.5px;">Notification Center</div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:13.5px;" data-i18n="notifTitle">Notification Center</div>
         <div id="notif-list" style="padding:6px;"></div>
       </div>
     </div>
     <button id="lang-toggle" class="lang-btn">AR</button>
-    <div class="navcta">HR Workspace</div>
+    <div class="navcta" data-i18n="navcta">HR Workspace</div>
   </div>
 </div>
 
@@ -246,23 +268,23 @@
   <!-- ============ VIEW 1: COPILOT ============ -->
   <section class="view active" id="view-copilot">
     <div class="view-head">
-      <div class="eyebrow">Feature 01</div>
-      <h1 class="view-title">AI HR Copilot</h1>
-      <p class="view-sub">Pick a question type below. If it needs a specific employee, Copilot will ask you to choose their department and name before answering.</p>
+      <div class="eyebrow" data-i18n="f1eyebrow">Feature 01</div>
+      <h1 class="view-title" data-i18n="f1title">AI HR Copilot</h1>
+      <p class="view-sub" data-i18n="f1sub">Pick a question type below. If it needs a specific employee, Copilot will ask you to choose their department and name before answering.</p>
     </div>
     <div class="copilot-grid">
       <div class="card">
-        <div style="font-weight:700;font-size:15px;margin-bottom:2px;">Pending Requests</div>
-        <div style="font-size:12.5px;color:var(--gray-600);margin-bottom:10px;">Queue prioritized with Copilot assistance</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:2px;" data-i18n="pendingCardTitle">Pending Requests</div>
+        <div style="font-size:12.5px;color:var(--gray-600);margin-bottom:10px;" data-i18n="pendingCardSub">Queue prioritized with Copilot assistance</div>
         <div id="queue-list"></div>
       </div>
       <div class="card chat-card">
-        <div class="chat-head"><span class="dot"></span> HR Copilot</div>
+        <div class="chat-head"><span class="dot"></span> <span data-i18n="chatHead">HR Copilot</span></div>
         <div class="briefing-bar" id="briefing-bar"></div>
         <div class="chat-body" id="chat-body"></div>
         <div class="chips" id="chat-chips"></div>
         <div class="chat-input-row">
-          <input type="text" id="chat-input" placeholder="Ask about requests, attendance, or policies…">
+          <input type="text" id="chat-input" data-i18n-placeholder="chatPlaceholder" placeholder="Ask about requests, attendance, or policies…">
           <button id="chat-send" aria-label="Send">→</button>
         </div>
       </div>
@@ -272,20 +294,20 @@
   <!-- ============ VIEW 2: L&D ============ -->
   <section class="view" id="view-ld">
     <div class="view-head">
-      <div class="eyebrow">Feature 02</div>
-      <h1 class="view-title">AI Learning &amp; Development Recommendations</h1>
-      <p class="view-sub">AI generates personalized course recommendations, which HR reviews first, then forwards to the employee's manager. The employee only ever sees recommendations after both have reviewed them.</p>
+      <div class="eyebrow" data-i18n="f2eyebrow">Feature 02</div>
+      <h1 class="view-title" data-i18n="f2title">AI Learning &amp; Development Recommendations</h1>
+      <p class="view-sub" data-i18n="f2sub">AI generates personalized course recommendations, which HR reviews first, then forwards to the employee's manager. The employee only ever sees recommendations after both have reviewed them.</p>
     </div>
     <div class="select-row">
       <select id="ld-division-select">
-        <option value="">Select department…</option>
+        <option value="" data-i18n="deptPlaceholderOpt">Select department…</option>
       </select>
       <select id="ld-employee-select" disabled>
-        <option value="">Select employee…</option>
+        <option value="" data-i18n="empPlaceholderOpt">Select employee…</option>
       </select>
     </div>
     <div id="ld-rec-area">
-      <div class="empty-hint">Select a department, then an employee, to generate AI development recommendations.</div>
+      <div class="empty-hint" data-i18n="ldEmptyHint">Select a department, then an employee, to generate AI development recommendations.</div>
     </div>
     <div id="ld-manager-area"></div>
     <div id="ld-final-area"></div>
@@ -294,20 +316,20 @@
   <!-- ============ VIEW 3: PROMOTION ============ -->
   <section class="view" id="view-promo">
     <div class="view-head">
-      <div class="eyebrow">Feature 03</div>
-      <h1 class="view-title">AI Promotion Readiness Predictor</h1>
-      <p class="view-sub">A transparent readiness score built from policy criteria and employee records. This is decision support — the outcome always goes to the employee's manager, never to the employee directly.</p>
+      <div class="eyebrow" data-i18n="f3eyebrow">Feature 03</div>
+      <h1 class="view-title" data-i18n="f3title">AI Promotion Readiness Predictor</h1>
+      <p class="view-sub" data-i18n="f3sub">A transparent readiness score built from policy criteria and employee records. This is decision support — the outcome always goes to the employee's manager, never to the employee directly.</p>
     </div>
     <div class="select-row">
       <select id="promo-division-select">
-        <option value="">Select department…</option>
+        <option value="" data-i18n="deptPlaceholderOpt">Select department…</option>
       </select>
       <select id="promo-employee-select" disabled>
-        <option value="">Select employee…</option>
+        <option value="" data-i18n="empPlaceholderOpt">Select employee…</option>
       </select>
     </div>
     <div id="promo-body-area">
-      <div class="empty-hint">Select a department, then an employee, to generate a promotion readiness score.</div>
+      <div class="empty-hint" data-i18n="promoEmptyHint">Select a department, then an employee, to generate a promotion readiness score.</div>
     </div>
   </section>
 
@@ -321,7 +343,7 @@
     <div class="modal-icon">✓</div>
     <div class="modal-title" id="modal-title">Approval Complete</div>
     <div class="modal-text" id="modal-text">The approved development plan has been presented to the employee.</div>
-    <button class="pill-btn full" id="modal-close-btn">Close</button>
+    <button class="pill-btn full" id="modal-close-btn" data-i18n="modalClose">Close</button>
   </div>
 </div>
 
@@ -331,8 +353,8 @@
     <div class="modal-title" id="confirm-modal-title">Approve this course?</div>
     <div class="modal-text" id="confirm-modal-text">Are you sure you want to approve this course?</div>
     <div class="modal-actions">
-      <button class="pill-btn outline full" id="confirm-modal-cancel">Cancel</button>
-      <button class="pill-btn full" id="confirm-modal-yes">Yes, Approve</button>
+      <button class="pill-btn outline full" id="confirm-modal-cancel" data-i18n="confirmCancel">Cancel</button>
+      <button class="pill-btn full" id="confirm-modal-yes" data-i18n="confirmYesApprove">Yes, Approve</button>
     </div>
   </div>
 </div>
@@ -375,7 +397,7 @@ function renderNotifications(notifications){
   const list = document.getElementById("notif-list");
   if (!notifications || notifications.length === 0){
     badge.style.display = "none";
-    list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
+    list.innerHTML = `<div class="notif-empty">${S('noNotif')}</div>`;
     return;
   }
   badge.style.display = "flex";
@@ -451,19 +473,19 @@ async function renderQueue(){
     const rows = await res.json();
     list.innerHTML = "";
     if (!rows.length){
-      list.innerHTML = '<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">No pending requests in queue.</div>';
+      list.innerHTML = `<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">${S('noQueue')}</div>`;
       return;
     }
     rows.forEach(r=>{
       const tagClass = r.status==="overdue" ? "danger" : r.status==="policy" ? "warn" : "ok";
-      const tagText = r.status==="overdue" ? `Overdue ${r.days}d` : r.status==="policy" ? "Policy check needed" : "Ready to approve";
+      const tagText = r.status==="overdue" ? (window.__lang==='ar' ? `متأخر ${r.days}د` : `Overdue ${r.days}d`) : r.status==="policy" ? S('tagPolicy') : S('tagReady');
       const row = document.createElement("div");
       row.className = "queue-row";
       row.innerHTML = `<span><span class="who">${r.what}</span> <span class="what">— ${r.who}</span></span><span class="tag ${tagClass}">${tagText}</span>`;
       list.appendChild(row);
     });
   } catch(e) {
-    list.innerHTML = '<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">Unable to load queue.</div>';
+    list.innerHTML = `<div style="font-size:13px;color:var(--gray-500);padding:16px 4px;">${S('queueError')}</div>`;
   }
 }
 
@@ -494,31 +516,33 @@ function addAction(text, onClick){
 }
 
 const suggestions = [
-  { label: "Show pending requests older than 3 days", needsEmployee: false, kind: "pending" },
-  { label: "Show employees with repeated late attendance this month", needsEmployee: false, kind: "lateAttendance" },
-  { label: "List requests still awaiting manager approval", needsEmployee: false, kind: "awaitingApproval" },
-  { label: "Show today's approved requests", needsEmployee: false, kind: "approvedToday" },
-  { label: "Show employees ready for promotion", needsEmployee: false, kind: "promotionReady" },
-  { label: "Show employees not yet ready for promotion", needsEmployee: false, kind: "promotionNotReady" },
-  { label: "Show top performers this quarter", needsEmployee: false, kind: "topPerformers" },
-  { label: "Show headcount by department", needsEmployee: false, kind: "headcount" },
-  { label: "Show employees missing leadership certification", needsEmployee: false, kind: "certMissing" },
-  { label: "Show employees who joined this year", needsEmployee: false, kind: "newJoiners" },
-  { label: "Who is at risk of burnout?", needsEmployee: false, kind: "burnoutRisk" },
-  { label: "Show open headcount requests", needsEmployee: false, kind: "openHeadcount" },
-  { label: "Show employee turnover in the last 12 months", needsEmployee: false, kind: "turnoverRate" },
-  { label: "Show disciplinary records and commendations", needsEmployee: false, kind: "disciplinaryCheck" },
-  { label: "What is the leave policy?", needsEmployee: false, kind: "leavePolicy" },
-  { label: "What is the overtime policy?", needsEmployee: false, kind: "overtimePolicy" },
-  { label: "What is the expense claims policy?", needsEmployee: false, kind: "expensePolicy" },
-  { label: "What is the attendance policy?", needsEmployee: false, kind: "attendancePolicy" },
-  { label: "Get a full AI briefing on an employee", needsEmployee: true, kind: "employeeSummary" },
-  { label: "Check an employee's attendance this quarter", needsEmployee: true, kind: "attendance" },
-  { label: "Check an employee's current leave balance", needsEmployee: true, kind: "balance" },
-  { label: "Check policy on an employee's recent request", needsEmployee: true, kind: "policy" },
-  { label: "Check who an employee's manager is", needsEmployee: true, kind: "manager" },
-  { label: "Check an employee's tenure in their current role", needsEmployee: true, kind: "tenure" },
+  { label: "Show pending requests older than 3 days", arLabel: "عرض الطلبات المعلقة منذ أكثر من 3 أيام", needsEmployee: false, kind: "pending" },
+  { label: "Show employees with repeated late attendance this month", arLabel: "عرض الموظفين المتأخرين بشكل متكرر هذا الشهر", needsEmployee: false, kind: "lateAttendance" },
+  { label: "List requests still awaiting manager approval", arLabel: "عرض الطلبات المنتظرة لموافقة المدير", needsEmployee: false, kind: "awaitingApproval" },
+  { label: "Show today's approved requests", arLabel: "عرض الطلبات المعتمدة اليوم", needsEmployee: false, kind: "approvedToday" },
+  { label: "Show employees ready for promotion", arLabel: "عرض الموظفين الجاهزين للترقية", needsEmployee: false, kind: "promotionReady" },
+  { label: "Show employees not yet ready for promotion", arLabel: "عرض الموظفين غير الجاهزين للترقية", needsEmployee: false, kind: "promotionNotReady" },
+  { label: "Show top performers this quarter", arLabel: "عرض أفضل الموظفين أداءً هذا الربع", needsEmployee: false, kind: "topPerformers" },
+  { label: "Show headcount by department", arLabel: "عرض عدد الموظفين حسب القسم", needsEmployee: false, kind: "headcount" },
+  { label: "Show employees missing leadership certification", arLabel: "عرض الموظفين الذين لم يحصلوا على شهادة القيادة", needsEmployee: false, kind: "certMissing" },
+  { label: "Show employees who joined this year", arLabel: "عرض الموظفين الذين انضموا هذا العام", needsEmployee: false, kind: "newJoiners" },
+  { label: "Who is at risk of burnout?", arLabel: "من هم في خطر الإرهاق الوظيفي؟", needsEmployee: false, kind: "burnoutRisk" },
+  { label: "Show open headcount requests", arLabel: "عرض طلبات التوظيف المفتوحة", needsEmployee: false, kind: "openHeadcount" },
+  { label: "Show employee turnover in the last 12 months", arLabel: "عرض معدل دوران الموظفين خلال 12 شهراً", needsEmployee: false, kind: "turnoverRate" },
+  { label: "Show disciplinary records and commendations", arLabel: "عرض السجلات التأديبية والتقديرية", needsEmployee: false, kind: "disciplinaryCheck" },
+  { label: "What is the leave policy?", arLabel: "ما هي سياسة الإجازات؟", needsEmployee: false, kind: "leavePolicy" },
+  { label: "What is the overtime policy?", arLabel: "ما هي سياسة العمل الإضافي؟", needsEmployee: false, kind: "overtimePolicy" },
+  { label: "What is the expense claims policy?", arLabel: "ما هي سياسة المصروفات؟", needsEmployee: false, kind: "expensePolicy" },
+  { label: "What is the attendance policy?", arLabel: "ما هي سياسة الحضور؟", needsEmployee: false, kind: "attendancePolicy" },
+  { label: "Get a full AI briefing on an employee", arLabel: "الحصول على تقرير ذكاء اصطناعي كامل عن موظف", needsEmployee: true, kind: "employeeSummary" },
+  { label: "Check an employee's attendance this quarter", arLabel: "التحقق من حضور موظف هذا الربع", needsEmployee: true, kind: "attendance" },
+  { label: "Check an employee's current leave balance", arLabel: "التحقق من رصيد إجازة موظف", needsEmployee: true, kind: "balance" },
+  { label: "Check policy on an employee's recent request", arLabel: "التحقق من سياسة آخر طلب لموظف", needsEmployee: true, kind: "policy" },
+  { label: "Check who an employee's manager is", arLabel: "التحقق من مدير الموظف", needsEmployee: true, kind: "manager" },
+  { label: "Check an employee's tenure in their current role", arLabel: "التحقق من مدة خدمة موظف في دوره الحالي", needsEmployee: true, kind: "tenure" },
 ];
+
+function chipLabel(s) { return window.__lang === 'ar' && s.arLabel ? s.arLabel : s.label; }
 
 function renderChips(){
   chatChips.innerHTML = "";
@@ -527,7 +551,7 @@ function renderChips(){
   visible.forEach(s=>{
     const c = document.createElement("div");
     c.className = "chip";
-    c.textContent = s.label;
+    c.textContent = chipLabel(s);
     c.addEventListener("click", ()=> triggerSuggestion(s));
     chatChips.appendChild(c);
   });
@@ -535,8 +559,8 @@ function renderChips(){
     const sel = document.createElement("select");
     sel.className = "small-select";
     sel.style.maxWidth = "220px";
-    sel.innerHTML = `<option value="">More questions…</option>` +
-      overflow.map((s,i)=>`<option value="${i}">${s.label}</option>`).join("");
+    sel.innerHTML = `<option value="">${S('moreQuestions')}</option>` +
+      overflow.map((s,i)=>`<option value="${i}">${chipLabel(s)}</option>`).join("");
     sel.addEventListener("change", ()=>{
       if (sel.value === "") return;
       triggerSuggestion(overflow[parseInt(sel.value, 10)]);
@@ -548,6 +572,200 @@ function renderChips(){
 
 /* ---- language & history state ---- */
 window.__lang = 'en';
+
+const STRINGS = {
+  en: {
+    /* nav */
+    badge: 'AI ENHANCEMENT · MVP',
+    navCopilot: 'HR Copilot',
+    navDev: 'Development',
+    navPromo: 'Promotion Readiness',
+    notifTitle: 'Notification Center',
+    navcta: 'HR Workspace',
+    noNotif: 'No notifications yet.',
+    /* feature 1 */
+    f1eyebrow: 'Feature 01',
+    f1title: 'AI HR Copilot',
+    f1sub: 'Pick a question type below. If it needs a specific employee, Copilot will ask you to choose their department and name before answering.',
+    pendingCardTitle: 'Pending Requests',
+    pendingCardSub: 'Queue prioritized with Copilot assistance',
+    chatHead: 'HR Copilot',
+    chatPlaceholder: 'Ask about requests, attendance, or policies…',
+    welcomeMsg: "Hi, I'm your HR Copilot. Pick a question type below or click any metric above to get started.",
+    thinking: 'Thinking…',
+    searching: 'Searching records…',
+    noResults: 'No results found.',
+    serverError: 'Unable to reach the server. Please try again.',
+    moreQuestions: 'More questions…',
+    whichEmp: 'Which employee is this about?',
+    whichEmpSelect: 'Which employee is this about? Please select one:',
+    deptPlaceholder: 'Department…',
+    empPlaceholder: 'Employee…',
+    deptPlaceholderOpt: 'Select department…',
+    empPlaceholderOpt: 'Select employee…',
+    continueBtn: 'Continue',
+    selectedLabel: 'Selected:',
+    flagManager: 'Flag for manager sign-off',
+    flaggedMsg: 'Request flagged for manager review.',
+    downloadPdf: 'Download Briefing PDF',
+    noQueue: 'No pending requests in queue.',
+    queueError: 'Unable to load queue.',
+    tagPolicy: 'Policy check needed',
+    tagReady: 'Ready to approve',
+    /* briefing bar */
+    briefPending: 'Pending Requests',
+    briefBurnout: 'Burnout Risk',
+    briefPromo: 'Promotion Ready',
+    briefPips: 'Active Warnings/PIPs',
+    /* feature 2 */
+    f2eyebrow: 'Feature 02',
+    f2title: 'AI Learning & Development Recommendations',
+    f2sub: "AI generates personalized course recommendations, which HR reviews first, then forwards to the employee's manager. The employee only ever sees recommendations after both have reviewed them.",
+    ldEmptyHint: 'Select a department, then an employee, to generate AI development recommendations.',
+    ldSelectEmpHint: 'Select an employee to generate AI development recommendations.',
+    ldLoadError: 'Unable to load recommendations. Please try again.',
+    ldSectionLabel: 'AI Recommendations — Pending HR Review',
+    relevanceLabel: 'Relevance to role',
+    whyRecommended: 'Why recommended',
+    approvedByHR: '✓ Approved by HR',
+    rejectedByHR: '✕ Rejected by HR',
+    approveBtn: 'Approve',
+    rejectBtn: 'Reject',
+    allRejectedHint: 'All recommendations were rejected by HR — nothing to forward to the manager.',
+    pipelineNote: 'Approve or reject every recommendation to continue.',
+    pendingManagerReview: 'Pending Manager Review',
+    confirmedPlan: 'Confirmed Development Plan',
+    confirmed: '✓ Confirmed',
+    approveTitle: 'Approve this course?',
+    approveError: 'Error approving course.',
+    rejectError: 'Error rejecting course.',
+    forwardError: 'Error forwarding to manager.',
+    presentError: 'Error marking as presented.',
+    requestIdLabel: 'Request ID:',
+    /* feature 3 */
+    f3eyebrow: 'Feature 03',
+    f3title: 'AI Promotion Readiness Predictor',
+    f3sub: 'A transparent readiness score built from policy criteria and employee records. This is decision support — the outcome always goes to the employee\'s manager, never to the employee directly.',
+    promoEmptyHint: 'Select a department, then an employee, to generate a promotion readiness score.',
+    promoLoadError: 'Unable to load promotion data. Please try again.',
+    scoreLabel: 'Promotion Readiness Score',
+    promoReady: 'Ready for committee review',
+    promoNotReady: 'Not yet ready for review',
+    factorMet: 'Met',
+    factorNotMet: 'Not met',
+    promoForwardError: 'Error forwarding result.',
+    /* modal */
+    modalClose: 'Close',
+    confirmCancel: 'Cancel',
+    confirmYesApprove: 'Yes, Approve',
+    approvalCompleteTitle: 'Approval Complete',
+  },
+  ar: {
+    /* nav */
+    badge: 'تعزيز الذكاء الاصطناعي · نسخة تجريبية',
+    navCopilot: 'المساعد الذكي',
+    navDev: 'التطوير',
+    navPromo: 'الاستعداد للترقية',
+    notifTitle: 'مركز الإشعارات',
+    navcta: 'فضاء الموارد البشرية',
+    noNotif: 'لا توجد إشعارات بعد.',
+    /* feature 1 */
+    f1eyebrow: 'الميزة الأولى',
+    f1title: 'المساعد الذكي للموارد البشرية',
+    f1sub: 'اختر نوع السؤال أدناه. إذا كان يتعلق بموظف محدد، سيطلب منك المساعد اختيار القسم والاسم قبل الإجابة.',
+    pendingCardTitle: 'الطلبات المعلقة',
+    pendingCardSub: 'قائمة الانتظار مُرتَّبة بمساعدة الذكاء الاصطناعي',
+    chatHead: 'المساعد الذكي',
+    chatPlaceholder: 'اسأل عن الطلبات أو الحضور أو السياسات...',
+    welcomeMsg: 'مرحباً، أنا مساعدك في الموارد البشرية. اختر سؤالاً من الاقتراحات أو اكتب ما تريد معرفته.',
+    thinking: 'جارٍ التفكير...',
+    searching: 'جارٍ البحث في السجلات...',
+    noResults: 'لا توجد نتائج.',
+    serverError: 'تعذّر الوصول إلى الخادم. يرجى المحاولة مجدداً.',
+    moreQuestions: 'المزيد من الأسئلة...',
+    whichEmp: 'عن أي موظف تسأل؟',
+    whichEmpSelect: 'عن أي موظف تسأل؟ يرجى الاختيار:',
+    deptPlaceholder: 'القسم...',
+    empPlaceholder: 'الموظف...',
+    deptPlaceholderOpt: 'اختر القسم...',
+    empPlaceholderOpt: 'اختر الموظف...',
+    continueBtn: 'متابعة',
+    selectedLabel: 'المحدد:',
+    flagManager: 'تحديد لمراجعة المدير',
+    flaggedMsg: 'تم تحديد الطلب لمراجعة المدير.',
+    downloadPdf: 'تحميل تقرير PDF',
+    noQueue: 'لا طلبات معلقة في القائمة.',
+    queueError: 'تعذّر تحميل القائمة.',
+    tagPolicy: 'يحتاج مراجعة السياسة',
+    tagReady: 'جاهز للموافقة',
+    /* briefing bar */
+    briefPending: 'الطلبات المعلقة',
+    briefBurnout: 'خطر الإرهاق',
+    briefPromo: 'جاهز للترقية',
+    briefPips: 'تحذيرات/خطط تحسين نشطة',
+    /* feature 2 */
+    f2eyebrow: 'الميزة الثانية',
+    f2title: 'توصيات التعلم والتطوير بالذكاء الاصطناعي',
+    f2sub: 'يولّد الذكاء الاصطناعي توصيات دورات مخصصة، تراجعها الموارد البشرية أولاً ثم تُرسلها إلى مدير الموظف. لا يرى الموظف التوصيات إلا بعد مراجعة الطرفين.',
+    ldEmptyHint: 'اختر قسماً ثم موظفاً لإنشاء توصيات التطوير بالذكاء الاصطناعي.',
+    ldSelectEmpHint: 'اختر موظفاً لإنشاء توصيات التطوير بالذكاء الاصطناعي.',
+    ldLoadError: 'تعذّر تحميل التوصيات. يرجى المحاولة مجدداً.',
+    ldSectionLabel: 'توصيات الذكاء الاصطناعي — في انتظار مراجعة الموارد البشرية',
+    relevanceLabel: 'الصلة بالدور',
+    whyRecommended: 'سبب التوصية',
+    approvedByHR: '✓ تمت الموافقة من الموارد البشرية',
+    rejectedByHR: '✕ مرفوض من الموارد البشرية',
+    approveBtn: 'موافقة',
+    rejectBtn: 'رفض',
+    allRejectedHint: 'تم رفض جميع التوصيات من الموارد البشرية — لا شيء لإرساله إلى المدير.',
+    pipelineNote: 'وافق على كل توصية أو ارفضها للمتابعة.',
+    pendingManagerReview: 'في انتظار مراجعة المدير',
+    confirmedPlan: 'خطة التطوير المؤكدة',
+    confirmed: '✓ مؤكد',
+    approveTitle: 'الموافقة على هذه الدورة؟',
+    approveError: 'خطأ في الموافقة على الدورة.',
+    rejectError: 'خطأ في رفض الدورة.',
+    forwardError: 'خطأ في الإرسال إلى المدير.',
+    presentError: 'خطأ في تسجيل العرض.',
+    requestIdLabel: 'معرّف الطلب:',
+    /* feature 3 */
+    f3eyebrow: 'الميزة الثالثة',
+    f3title: 'نظام توقع الاستعداد للترقية بالذكاء الاصطناعي',
+    f3sub: 'درجة استعداد شفافة مبنية على معايير السياسة وسجلات الموظف. هذا دعم للقرار — النتيجة تُرسل دائماً إلى مدير الموظف، وليس للموظف مباشرةً.',
+    promoEmptyHint: 'اختر قسماً ثم موظفاً لإنشاء درجة الاستعداد للترقية.',
+    promoLoadError: 'تعذّر تحميل بيانات الترقية. يرجى المحاولة مجدداً.',
+    scoreLabel: 'درجة الاستعداد للترقية',
+    promoReady: 'جاهز لمراجعة اللجنة',
+    promoNotReady: 'غير جاهز للمراجعة بعد',
+    factorMet: 'محقق',
+    factorNotMet: 'غير محقق',
+    promoForwardError: 'خطأ في إرسال النتيجة.',
+    /* modal */
+    modalClose: 'إغلاق',
+    confirmCancel: 'إلغاء',
+    confirmYesApprove: 'نعم، وافق',
+    approvalCompleteTitle: 'اكتملت الموافقة',
+  }
+};
+
+function S(key) { return (STRINGS[window.__lang] || STRINGS.en)[key] || STRINGS.en[key] || key; }
+
+function applyStrings(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = S(key);
+    if (val) el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const val = S(key);
+    if (val) el.placeholder = val;
+  });
+  const isAr = lang === 'ar';
+  document.documentElement.lang = isAr ? 'ar' : 'en';
+  document.body.classList.toggle('rtl', isAr);
+}
+
 let __chatHistory = [];
 function pushHistory(role, content) {
   __chatHistory.push({ role, content });
@@ -561,16 +779,11 @@ langToggleBtn.addEventListener('click', () => {
   langToggleBtn.textContent = isAr ? 'EN' : 'AR';
   langToggleBtn.classList.toggle('ar', isAr);
   chatBody.classList.toggle('rtl', isAr);
-  chatInput.placeholder = isAr
-    ? 'اسأل عن الطلبات أو الحضور أو السياسات...'
-    : 'Ask about requests, attendance, or policies…';
+  applyStrings(window.__lang);
   __chatHistory = [];
   loadBriefing();
   chatBody.innerHTML = '';
-  const welcome = isAr
-    ? 'مرحباً، أنا مساعدك في الموارد البشرية. اختر سؤالاً من الاقتراحات أو اكتب ما تريد معرفته.'
-    : "Hi, I'm your HR Copilot. Pick a question type below or click any metric above to get started.";
-  addMsg(welcome, 'ai');
+  addMsg(S('welcomeMsg'), 'ai');
   renderChips();
 });
 
@@ -580,10 +793,10 @@ async function loadBriefing() {
     const res = await fetch('/api/copilot/briefing');
     const d = await res.json();
     const cards = [
-      { num: d.pending,        label: 'Pending Requests',    kind: 'pending',          cls: d.pending > 0 ? 'warn' : '' },
-      { num: d.burnoutRisk,    label: 'Burnout Risk',         kind: 'burnoutRisk',      cls: d.burnoutRisk > 0 ? 'danger' : '' },
-      { num: d.promotionReady, label: 'Promotion Ready',      kind: 'promotionReady',   cls: d.promotionReady > 0 ? 'ok' : '' },
-      { num: d.activePips,     label: 'Active Warnings/PIPs', kind: 'disciplinaryCheck',cls: d.activePips > 0 ? 'danger' : '' },
+      { num: d.pending,        label: S('briefPending'),    kind: 'pending',          cls: d.pending > 0 ? 'warn' : '' },
+      { num: d.burnoutRisk,    label: S('briefBurnout'),    kind: 'burnoutRisk',      cls: d.burnoutRisk > 0 ? 'danger' : '' },
+      { num: d.promotionReady, label: S('briefPromo'),      kind: 'promotionReady',   cls: d.promotionReady > 0 ? 'ok' : '' },
+      { num: d.activePips,     label: S('briefPips'),       kind: 'disciplinaryCheck',cls: d.activePips > 0 ? 'danger' : '' },
     ];
     bar.innerHTML = cards.map(c =>
       `<div class="brief-card ${c.cls}" data-kind="${c.kind}">
@@ -625,9 +838,9 @@ function addFollowUpChips(chips) {
 }
 
 async function triggerSuggestion(s){
-  addMsg(s.label, "user");
+  addMsg(chipLabel(s), "user");
   if (!s.needsEmployee){
-    const typing = addMsg("Searching records…", "typing");
+    const typing = addMsg(S('searching'), "typing");
     try {
       const res = await fetch('/api/copilot/chat', {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -635,13 +848,13 @@ async function triggerSuggestion(s){
       });
       const data = await res.json();
       typing.remove();
-      addMsg(data.reply || "No results found.", "ai");
-      pushHistory('user', s.label);
+      addMsg(data.reply || S('noResults'), "ai");
+      pushHistory('user', chipLabel(s));
       pushHistory('assistant', data.reply || '');
       addFollowUpChips(data.followUps);
     } catch(e) {
       typing.remove();
-      addMsg("Unable to reach the server. Please try again.", "ai");
+      addMsg(S('serverError'), "ai");
     }
     return;
   }
@@ -652,12 +865,12 @@ function askForEmployee(onDone){
   const wrap = document.createElement("div");
   wrap.className = "msg selector";
   wrap.innerHTML = `
-    <div class="selector-label">Which employee is this about?</div>
+    <div class="selector-label">${S('whichEmp')}</div>
     <div class="selector-row">
-      <select class="small-select" data-role="dept"><option value="">Department…</option></select>
-      <select class="small-select" data-role="emp" disabled><option value="">Employee…</option></select>
+      <select class="small-select" data-role="dept"><option value="">${S('deptPlaceholder')}</option></select>
+      <select class="small-select" data-role="emp" disabled><option value="">${S('empPlaceholder')}</option></select>
     </div>
-    <button class="pill-btn small" data-role="go" disabled>Continue</button>
+    <button class="pill-btn small" data-role="go" disabled>${S('continueBtn')}</button>
   `;
   chatBody.appendChild(wrap);
   chatBody.scrollTop = chatBody.scrollHeight;
@@ -689,7 +902,7 @@ function askForEmployee(onDone){
     const dept = (window.__depts || []).find(d=>d.key===deptSel.value);
     const emp = dept && dept.employees.find(e=>String(e.id)===String(empId));
     const empName = emp ? `${emp.first_name} ${emp.last_name}` : 'Selected employee';
-    wrap.innerHTML = `<div class="selector-label" style="margin-bottom:0;">Selected: <strong>${empName}</strong></div>`;
+    wrap.innerHTML = `<div class="selector-label" style="margin-bottom:0;">${S('selectedLabel')} <strong>${empName}</strong></div>`;
     onDone(empId, empName);
   });
 }
@@ -698,7 +911,7 @@ let __lastEmpId = null;
 let __lastEmpName = null;
 
 async function answerForEmployee(kind, empId, empName){
-  const typing = addMsg("Searching records…", "typing");
+  const typing = addMsg(S('searching'), "typing");
   try {
     const res = await fetch('/api/copilot/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -706,29 +919,29 @@ async function answerForEmployee(kind, empId, empName){
     });
     const data = await res.json();
     typing.remove();
-    const replyText = data.reply || "No results found.";
+    const replyText = data.reply || S('noResults');
     addMsg(replyText, "ai");
     pushHistory('assistant', replyText);
     __lastEmpId = empId;
     if (empName) __lastEmpName = empName;
     if (kind === 'policy'){
-      addAction('Flag for manager sign-off', ()=> addMsg('Request flagged for manager review.', 'ai'));
+      addAction(S('flagManager'), ()=> addMsg(S('flaggedMsg'), 'ai'));
     }
     if (kind === 'employeeSummary' && data.briefingMeta) {
       const meta = data.briefingMeta;
-      addAction('Download Briefing PDF', () => generateBriefingPdf(meta, replyText));
+      addAction(S('downloadPdf'), () => generateBriefingPdf(meta, replyText));
     }
     addFollowUpChips(data.followUps);
   } catch(e) {
     typing.remove();
-    addMsg("Unable to reach the server. Please try again.", "ai");
+    addMsg(S('serverError'), "ai");
   }
 }
 
 async function handleFreeText(q){
   addMsg(q, "user");
   pushHistory('user', q);
-  const typing = addMsg("Thinking…", "typing");
+  const typing = addMsg(S('thinking'), "typing");
   try {
     const res = await fetch('/api/copilot/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -738,11 +951,11 @@ async function handleFreeText(q){
     typing.remove();
     if (data.needsEmployee){
       if (__lastEmpId && __lastEmpName) {
-        addMsg(`Did you mean ${__lastEmpName}? Select below or pick a different employee:`, "ai");
+        addMsg(window.__lang === 'ar' ? `هل تقصد ${__lastEmpName}؟ اختر أدناه أو اختر موظفاً آخر:` : `Did you mean ${__lastEmpName}? Select below or pick a different employee:`, "ai");
         const quickBtn = document.createElement("button");
         quickBtn.className = "pill-btn small";
         quickBtn.style.margin = "6px 0 4px";
-        quickBtn.textContent = `Use ${__lastEmpName}`;
+        quickBtn.textContent = (window.__lang === 'ar' ? `استخدام ` : `Use `) + __lastEmpName;
         quickBtn.addEventListener("click", () => {
           quickBtn.parentElement && quickBtn.parentElement.remove();
           answerForEmployee(data.suggestedIntent || 'balance', __lastEmpId, __lastEmpName);
@@ -750,21 +963,21 @@ async function handleFreeText(q){
         chatBody.appendChild(quickBtn);
         chatBody.scrollTop = chatBody.scrollHeight;
       } else {
-        addMsg("Which employee is this about? Please select one:", "ai");
+        addMsg(S('whichEmpSelect'), "ai");
       }
       askForEmployee((empId, empName) => answerForEmployee(data.suggestedIntent || 'balance', empId, empName));
     } else {
-      const replyText = data.reply || "No results found.";
+      const replyText = data.reply || S('noResults');
       addMsg(replyText, "ai");
       pushHistory('assistant', replyText);
       if (data.briefingMeta) {
-        addAction('Download Briefing PDF', () => generateBriefingPdf(data.briefingMeta, replyText));
+        addAction(S('downloadPdf'), () => generateBriefingPdf(data.briefingMeta, replyText));
       }
       addFollowUpChips(data.followUps);
     }
   } catch(e) {
     typing.remove();
-    addMsg("Unable to reach the server. Please try again.", "ai");
+    addMsg(S('serverError'), "ai");
   }
 }
 
@@ -851,7 +1064,7 @@ let forwardedAt = null;
 divSelect.addEventListener("change", ()=>{
   const deptKey = divSelect.value;
   empSelect.innerHTML = '<option value="">Select employee…</option>';
-  document.getElementById("ld-rec-area").innerHTML = '<div class="empty-hint">Select an employee to generate AI development recommendations.</div>';
+  document.getElementById("ld-rec-area").innerHTML = `<div class="empty-hint">${S('ldSelectEmpHint')}</div>`;
   document.getElementById("ld-manager-area").innerHTML = "";
   document.getElementById("ld-final-area").innerHTML = "";
   if (followUpTimer){ clearTimeout(followUpTimer); followUpTimer = null; }
@@ -880,7 +1093,7 @@ empSelect.addEventListener("change", async ()=>{
   ldCurrentEmpName = empObj ? `${empObj.first_name} ${empObj.last_name}` : 'Employee';
 
   const area = document.getElementById("ld-rec-area");
-  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> AI analyzing ${ldCurrentEmpName}'s performance, skill gaps, and career trajectory…</div>`;
+  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> ${window.__lang === 'ar' ? `الذكاء الاصطناعي يحلل أداء ${ldCurrentEmpName} وفجوات المهارات والمسار الوظيفي...` : `AI analyzing ${ldCurrentEmpName}'s performance, skill gaps, and career trajectory…`}</div>`;
 
   try {
     const res = await fetch(`/api/recommendations/${empId}`);
@@ -895,14 +1108,14 @@ empSelect.addEventListener("change", async ()=>{
     }
     renderHRReview(empId, data);
   } catch(e) {
-    area.innerHTML = '<div class="empty-hint">Unable to load recommendations. Please try again.</div>';
+    area.innerHTML = `<div class="empty-hint">${S('ldLoadError')}</div>`;
   }
 });
 
 function renderHRReview(empId, recs){
   const area = document.getElementById("ld-rec-area");
   area.innerHTML = "";
-  area.appendChild(el("div", "section-label", "AI Recommendations — Pending HR Review"));
+  area.appendChild(el("div", "section-label", S('ldSectionLabel')));
   const grid = document.createElement("div");
   grid.className = "rec-grid";
 
@@ -912,17 +1125,17 @@ function renderHRReview(empId, recs){
     card.className = "card rec-card" + (state==="approved" ? " approved" : state==="rejected" ? " rejected" : "");
     card.innerHTML = `
       <a class="rtitle course-link-title" href="https://www.coursera.org/search?query=${encodeURIComponent(rec.courseTitle)}" target="_blank" rel="noopener">${rec.courseTitle} ↗</a>
-      <div class="rel-row"><span>Relevance to role</span><span>${rec.rel}</span></div>
+      <div class="rel-row"><span>${S('relevanceLabel')}</span><span>${rec.rel}</span></div>
       <div class="barbg"><div class="barfill" style="width:${rec.relevancePct}%;"></div></div>
-      <div class="reason-label">Why recommended</div>
+      <div class="reason-label">${S('whyRecommended')}</div>
       <div class="reason">${rec.aiRationale || ''}</div>
       ${state==="approved"
-        ? `<div class="status-note">✓ Approved by HR</div>`
+        ? `<div class="status-note">${S('approvedByHR')}</div>`
         : state==="rejected"
-        ? `<div class="status-note rejected">✕ Rejected by HR</div>`
+        ? `<div class="status-note rejected">${S('rejectedByHR')}</div>`
         : `<div class="rec-actions">
-             <button class="pill-btn small" data-approve="${rec.id}">Approve</button>
-             <button class="pill-btn danger-outline small" data-reject="${rec.id}">Reject</button>
+             <button class="pill-btn small" data-approve="${rec.id}">${S('approveBtn')}</button>
+             <button class="pill-btn danger-outline small" data-reject="${rec.id}">${S('rejectBtn')}</button>
            </div>`
       }
     `;
@@ -936,10 +1149,10 @@ function renderHRReview(empId, recs){
   footer.style.marginTop = "18px";
   if (allReviewed){
     footer.innerHTML = anyApproved
-      ? `<button class="pill-btn" id="forward-manager-btn">Forward HR Decision to ${ldCurrentManagerName} →</button>`
-      : `<div class="empty-hint">All recommendations were rejected by HR — nothing to forward to the manager.</div>`;
+      ? `<button class="pill-btn" id="forward-manager-btn">${window.__lang === 'ar' ? `إرسال قرار الموارد البشرية إلى ${ldCurrentManagerName} →` : `Forward HR Decision to ${ldCurrentManagerName} →`}</button>`
+      : `<div class="empty-hint">${S('allRejectedHint')}</div>`;
   } else {
-    footer.innerHTML = `<div class="pipeline-note">Approve or reject every recommendation to continue.</div>`;
+    footer.innerHTML = `<div class="pipeline-note">${S('pipelineNote')}</div>`;
   }
   area.appendChild(footer);
 
@@ -948,8 +1161,8 @@ function renderHRReview(empId, recs){
       const recId = btn.dataset.approve;
       const rec = recs.find(r=>String(r.id)===String(recId));
       showConfirmModal(
-        "Approve this course?",
-        `Are you sure you want to approve "${rec ? rec.courseTitle : 'this course'}" for ${ldCurrentEmpName}?`,
+        S('approveTitle'),
+        window.__lang === 'ar' ? `هل تريد الموافقة على "${rec ? rec.courseTitle : 'هذه الدورة'}" لـ ${ldCurrentEmpName}؟` : `Are you sure you want to approve "${rec ? rec.courseTitle : 'this course'}" for ${ldCurrentEmpName}?`,
         async ()=>{
           try {
             await fetch(`/api/recommendations/${recId}/approve`, { method:'PUT' });
@@ -957,7 +1170,7 @@ function renderHRReview(empId, recs){
             const newRecs = await updated.json();
             ldCurrentRecs = newRecs;
             renderHRReview(empId, newRecs);
-          } catch(e){ showToast("Error approving course."); }
+          } catch(e){ showToast(S('approveError')); }
         }
       );
     });
@@ -971,7 +1184,7 @@ function renderHRReview(empId, recs){
         const newRecs = await updated.json();
         ldCurrentRecs = newRecs;
         renderHRReview(empId, newRecs);
-      } catch(e){ showToast("Error rejecting course."); }
+      } catch(e){ showToast(S('rejectError')); }
     });
   });
 
@@ -984,7 +1197,7 @@ function renderHRReview(empId, recs){
       });
       const data = await res.json();
       forwardedAt = Date.now();
-      showToast(`HR decision forwarded to ${ldCurrentManagerName} (Request ${data.requestRef})`);
+      showToast(window.__lang === 'ar' ? `تم إرسال قرار الموارد البشرية إلى ${ldCurrentManagerName} (طلب ${data.requestRef})` : `HR decision forwarded to ${ldCurrentManagerName} (Request ${data.requestRef})`);
       const approvedRecs = ldCurrentRecs.filter(r=>r.hrStatus==="approved");
       renderManagerReview(empId, approvedRecs, data.requestRef);
       await loadNotifications();
@@ -1002,19 +1215,19 @@ function renderHRReview(empId, recs){
         await loadNotifications();
         followUpTimer = null;
       }, 30000);
-    } catch(e){ showToast("Error forwarding to manager."); }
+    } catch(e){ showToast(S('forwardError')); }
   });
 }
 
 function renderManagerReview(empId, approvedRecs, requestRef){
   const area = document.getElementById("ld-manager-area");
   area.innerHTML = "";
-  area.appendChild(el("div", "section-label", "Pending Manager Review"));
+  area.appendChild(el("div", "section-label", S('pendingManagerReview')));
   const card = document.createElement("div");
   card.className = "card";
   card.innerHTML = `
-    <div style="font-weight:700;font-size:15px;margin-bottom:4px;">HR-approved courses for ${ldCurrentEmpName}</div>
-    <div class="manager-line">Reviewing as <strong>${ldCurrentManagerName}</strong>, ${ldCurrentEmpName}'s manager. Confirm to present this plan directly to them.${requestRef ? ` <br>Request ID: ${requestRef}` : ""}</div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:4px;">${window.__lang === 'ar' ? `الدورات المعتمدة من الموارد البشرية لـ ${ldCurrentEmpName}` : `HR-approved courses for ${ldCurrentEmpName}`}</div>
+    <div class="manager-line">${window.__lang === 'ar' ? `المراجعة بصفة <strong>${ldCurrentManagerName}</strong>، مدير ${ldCurrentEmpName}. تأكيد لتقديم هذه الخطة مباشرةً.` : `Reviewing as <strong>${ldCurrentManagerName}</strong>, ${ldCurrentEmpName}'s manager. Confirm to present this plan directly to them.`}${requestRef ? ` <br>${S('requestIdLabel')} ${requestRef}` : ""}</div>
   `;
   approvedRecs.forEach(rec=>{
     const row = document.createElement("div");
@@ -1024,7 +1237,7 @@ function renderManagerReview(empId, approvedRecs, requestRef){
   });
   const btnWrap = document.createElement("div");
   btnWrap.style.marginTop = "16px";
-  btnWrap.innerHTML = `<button class="pill-btn full" id="present-employee-btn">Present Approved Recommendations to ${ldCurrentEmpName} →</button>`;
+  btnWrap.innerHTML = `<button class="pill-btn full" id="present-employee-btn">${window.__lang === 'ar' ? `تقديم التوصيات المعتمدة لـ ${ldCurrentEmpName} →` : `Present Approved Recommendations to ${ldCurrentEmpName} →`}</button>`;
   card.appendChild(btnWrap);
   area.appendChild(card);
 
@@ -1034,25 +1247,25 @@ function renderManagerReview(empId, approvedRecs, requestRef){
       for (const rec of approvedRecs){
         await fetch(`/api/recommendations/${rec.id}/present`, { method:'PUT' });
       }
-      showModal("Approval Complete", `${ldCurrentManagerName} has presented ${ldCurrentEmpName}'s development plan and the approval process (AI → HR → Manager → Employee) is now complete.`);
+      showModal(S('approvalCompleteTitle'), window.__lang === 'ar' ? `قدّم ${ldCurrentManagerName} خطة تطوير ${ldCurrentEmpName} واكتملت عملية الموافقة (الذكاء الاصطناعي → الموارد البشرية → المدير → الموظف).` : `${ldCurrentManagerName} has presented ${ldCurrentEmpName}'s development plan and the approval process (AI → HR → Manager → Employee) is now complete.`);
       renderFinalPlan(approvedRecs);
       area.innerHTML = "";
       await loadNotifications();
-    } catch(e){ showToast("Error marking as presented."); }
+    } catch(e){ showToast(S('presentError')); }
   });
 }
 
 function renderFinalPlan(approvedRecs){
   const area = document.getElementById("ld-final-area");
   area.innerHTML = "";
-  area.appendChild(el("div", "section-label", "Confirmed Development Plan"));
+  area.appendChild(el("div", "section-label", S('confirmedPlan')));
   const card = document.createElement("div");
   card.className = "card";
-  card.innerHTML = `<div style="font-weight:700;font-size:15px;margin-bottom:10px;">${ldCurrentEmpName} — presented by ${ldCurrentManagerName}</div>`;
+  card.innerHTML = `<div style="font-weight:700;font-size:15px;margin-bottom:10px;">${window.__lang === 'ar' ? `تم تقديمه لـ ${ldCurrentEmpName} من قِبَل ${ldCurrentManagerName}` : `${ldCurrentEmpName} — presented by ${ldCurrentManagerName}`}</div>`;
   approvedRecs.forEach(rec=>{
     const row = document.createElement("div");
     row.className = "final-plan-item";
-    row.innerHTML = `<span>${rec.courseTitle}</span><span style="color:var(--ok);font-weight:700;">✓ Confirmed</span>`;
+    row.innerHTML = `<span>${rec.courseTitle}</span><span style="color:var(--ok);font-weight:700;">${S('confirmed')}</span>`;
     card.appendChild(row);
   });
   area.appendChild(card);
@@ -1067,7 +1280,7 @@ const promoEmpSelect = document.getElementById("promo-employee-select");
 promoDivSelect.addEventListener("change", ()=>{
   const deptKey = promoDivSelect.value;
   promoEmpSelect.innerHTML = '<option value="">Select employee…</option>';
-  document.getElementById("promo-body-area").innerHTML = '<div class="empty-hint">Select an employee to generate a promotion readiness score.</div>';
+  document.getElementById("promo-body-area").innerHTML = `<div class="empty-hint">${S('promoEmptyHint')}</div>`;
   if (!deptKey){ promoEmpSelect.disabled = true; return; }
   const dept = (window.__depts || []).find(d=>d.key===deptKey);
   (dept ? dept.employees : []).forEach(e=>{
@@ -1081,21 +1294,21 @@ promoDivSelect.addEventListener("change", ()=>{
 promoEmpSelect.addEventListener("change", async ()=>{
   const empId = promoEmpSelect.value;
   const area = document.getElementById("promo-body-area");
-  if (!empId){ area.innerHTML = '<div class="empty-hint">Select an employee to generate a promotion readiness score.</div>'; return; }
+  if (!empId){ area.innerHTML = `<div class="empty-hint">${S('promoEmptyHint')}</div>`; return; }
 
   const deptKey = promoDivSelect.value;
   const dept = (window.__depts || []).find(d=>d.key===deptKey);
   const empObj = dept && dept.employees.find(e=>String(e.id)===String(empId));
   const empName = empObj ? `${empObj.first_name} ${empObj.last_name}` : 'Employee';
 
-  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> AI analyzing ${empName}'s performance, tenure, and policy criteria…</div>`;
+  area.innerHTML = `<div class="analyzing"><span class="spinner"></span> ${window.__lang === 'ar' ? `الذكاء الاصطناعي يحلل أداء ${empName} والمدة الوظيفية ومعايير السياسة...` : `AI analyzing ${empName}'s performance, tenure, and policy criteria…`}</div>`;
 
   try {
     const res = await fetch(`/api/promotion/${empId}`);
     const data = await res.json();
     renderPromo(empId, data);
   } catch(e) {
-    area.innerHTML = '<div class="empty-hint">Unable to load promotion data. Please try again.</div>';
+    area.innerHTML = `<div class="empty-hint">${S('promoLoadError')}</div>`;
   }
 });
 
@@ -1115,30 +1328,30 @@ function renderPromo(empId, data){
   data.factors.forEach(f=>{
     const row = document.createElement("div");
     row.className = "factor-row";
-    row.innerHTML = `<span>${f.label}</span><span class="chip-status ${f.met?"met":"notmet"}">${f.met?"Met":"Not met"}</span>`;
+    row.innerHTML = `<span>${f.label}</span><span class="chip-status ${f.met?"met":"notmet"}">${f.met ? S('factorMet') : S('factorNotMet')}</span>`;
     list.appendChild(row);
   });
   const ready = data.ready;
   document.getElementById("score-card").innerHTML = `
     <div class="score-num">${data.score}%</div>
-    <div class="score-label">Promotion Readiness Score</div>
-    <div class="score-verdict ${ready?"ready":"notready"}">${ready?"Ready for committee review":"Not yet ready for review"}</div>
-    <div class="disclaimer">This score is a decision-support estimate. The outcome is always routed to ${data.empName}'s manager, never to the employee directly.</div>
+    <div class="score-label">${S('scoreLabel')}</div>
+    <div class="score-verdict ${ready?"ready":"notready"}">${ready ? S('promoReady') : S('promoNotReady')}</div>
+    <div class="disclaimer">${window.__lang === 'ar' ? `هذه الدرجة تقديرية لدعم القرار. النتيجة تُرسل دائماً إلى مدير ${data.empName}، وليس للموظف مباشرةً.` : `This score is a decision-support estimate. The outcome is always routed to ${data.empName}'s manager, never to the employee directly.`}</div>
   `;
   document.getElementById("promo-note").innerHTML = `<div class="note-box ${ready?"ready":""}">${data.note}</div>`;
   const decisionBox = document.getElementById("decision-box");
   decisionBox.innerHTML = ready
-    ? `<button class="pill-btn full" id="decision-btn">Forward to ${data.managerName} for Promotion Committee Review →</button>`
-    : `<button class="pill-btn outline full" id="decision-btn">Send Development Feedback to ${data.managerName}</button>`;
+    ? `<button class="pill-btn full" id="decision-btn">${window.__lang === 'ar' ? `إرسال إلى ${data.managerName} لمراجعة لجنة الترقية →` : `Forward to ${data.managerName} for Promotion Committee Review →`}</button>`
+    : `<button class="pill-btn outline full" id="decision-btn">${window.__lang === 'ar' ? `إرسال ملاحظات التطوير إلى ${data.managerName}` : `Send Development Feedback to ${data.managerName}`}</button>`;
   document.getElementById("decision-btn").addEventListener("click", async ()=>{
     try {
       await fetch(`/api/promotion/${empId}/forward`, { method:'POST' });
       decisionBox.innerHTML = ready
-        ? `<div class="decision-confirmed">✓ Sent to ${data.managerName} (${data.empName}'s manager) for committee review</div>`
-        : `<div class="decision-confirmed">✓ Development feedback sent to ${data.managerName}</div>`;
-      showToast(ready ? `Sent to ${data.managerName} for committee review` : `Feedback sent to ${data.managerName}`);
+        ? `<div class="decision-confirmed">${window.__lang === 'ar' ? `✓ تم الإرسال إلى ${data.managerName} (مدير ${data.empName}) لمراجعة اللجنة` : `✓ Sent to ${data.managerName} (${data.empName}'s manager) for committee review`}</div>`
+        : `<div class="decision-confirmed">${window.__lang === 'ar' ? `✓ تم إرسال ملاحظات التطوير إلى ${data.managerName}` : `✓ Development feedback sent to ${data.managerName}`}</div>`;
+      showToast(ready ? (window.__lang === 'ar' ? `تم الإرسال إلى ${data.managerName} لمراجعة اللجنة` : `Sent to ${data.managerName} for committee review`) : (window.__lang === 'ar' ? `تم إرسال الملاحظات إلى ${data.managerName}` : `Feedback sent to ${data.managerName}`));
       await loadNotifications();
-    } catch(e){ showToast("Error forwarding result."); }
+    } catch(e){ showToast(S('promoForwardError')); }
   });
 }
 
@@ -1167,7 +1380,8 @@ function renderPromo(empId, data){
   await renderQueue();
   await loadNotifications();
   await loadBriefing();
-  addMsg("Hi, I'm your HR Copilot. Pick a question type below or click any metric above to get started.", "ai");
+  applyStrings(window.__lang);
+  addMsg(S('welcomeMsg'), "ai");
   renderChips();
 })();
 </script>

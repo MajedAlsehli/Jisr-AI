@@ -69,6 +69,11 @@
   .full-demo-btn{font-family:inherit;font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:var(--white);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
   .full-demo-btn:hover{background:var(--gray-600);border-color:var(--gray-600);}
   .full-demo-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  /* ================= DEMO NARRATOR ================= */
+  .demo-narrator{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(18px);background:#0B0B0B;color:#fff;padding:14px 20px 14px 14px;border-radius:16px;font-size:13.5px;font-weight:500;line-height:1.55;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;z-index:250;box-shadow:0 16px 48px rgba(0,0,0,.4);max-width:580px;width:calc(100% - 48px);display:flex;align-items:flex-start;gap:12px;}
+  .demo-narrator.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .demo-narrator-tag{font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:#6FE3A6;background:rgba(111,227,166,.12);border:1px solid rgba(111,227,166,.3);border-radius:999px;padding:3px 9px;white-space:nowrap;margin-top:2px;flex-shrink:0;}
   .eyebrow{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-600);margin-bottom:8px;}
   .view-title{font-size:30px;font-weight:800;letter-spacing:-0.6px;margin:0 0 8px;color:var(--ink);}
   .view-sub{font-size:15px;color:var(--gray-600);max-width:660px;line-height:1.55;margin:0;}
@@ -353,6 +358,10 @@
 
 </div>
 
+<div id="demo-narrator" class="demo-narrator">
+  <span class="demo-narrator-tag">DEMO</span>
+  <span id="demo-narrator-text"></span>
+</div>
 <div class="toast" id="toast"></div>
 
 <!-- Generic info/confirmation modal -->
@@ -1386,6 +1395,20 @@ function renderPromo(empId, data){
    ============================================================ */
 function demoDelay(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
+function N(en, ar){ return window.__lang === 'ar' && ar ? ar : en; }
+
+function demoNarrate(text){
+  const el = document.getElementById('demo-narrator');
+  const textEl = document.getElementById('demo-narrator-text');
+  el.classList.remove('show');
+  clearTimeout(window.__narrateTimer);
+  window.__narrateTimer = setTimeout(()=>{ textEl.textContent = text; el.classList.add('show'); }, 250);
+}
+function demoNarrateHide(){
+  clearTimeout(window.__narrateTimer);
+  document.getElementById('demo-narrator').classList.remove('show');
+}
+
 function switchView(name){
   document.querySelectorAll('.navtab').forEach(t=>t.classList.toggle('active', t.dataset.view===name));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
@@ -1402,123 +1425,249 @@ async function demoType(text){
   for(const ch of text){
     m.textContent += ch;
     chatBody.scrollTop = chatBody.scrollHeight;
-    await demoDelay(22);
+    await demoDelay(38);
   }
-  await demoDelay(280);
+  await demoDelay(350);
   m.className = 'msg user';
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-async function runDemo1(fromFull){
+async function runDemo1(){
   const btn = document.getElementById('demo-btn-1');
   btn.disabled = true; btn.textContent = S('demoRunning');
   switchView('copilot');
   chatBody.innerHTML = ''; __chatHistory = []; __lastEmpId = null; __lastEmpName = null;
-  await demoDelay(500);
 
-  const steps = ['pending','burnoutRisk','promotionReady'];
-  for(const kind of steps){
-    const s = suggestions.find(s=>s.kind===kind);
-    await demoType(chipLabel(s));
-    const t = addMsg(S('searching'),'typing');
-    try {
-      const r = await fetch('/api/copilot/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,lang:window.__lang})});
-      const d = await r.json();
-      t.remove();
-      addMsg(d.reply||S('noResults'),'ai');
-      pushHistory('user',chipLabel(s)); pushHistory('assistant',d.reply||'');
-      addFollowUpChips(d.followUps);
-    } catch(e){ t.remove(); addMsg(S('serverError'),'ai'); }
-    await demoDelay(2200);
-  }
+  demoNarrate(N(
+    'Feature 1 — AI HR Copilot. Ask any workforce question in plain language and get an instant, data-grounded answer.',
+    'الميزة الأولى — المساعد الذكي للموارد البشرية. اطرح أي سؤال عن القوى العاملة بلغة طبيعية واحصل على إجابة فورية مستندة إلى البيانات.'
+  ));
+  await demoDelay(3800);
 
+  // Step 1 — pending requests
+  demoNarrate(N(
+    'Asking about overdue requests — Copilot scans all pending items and flags anything past the 3-day SLA.',
+    'السؤال عن الطلبات المتأخرة — يفحص المساعد جميع الطلبات المعلقة ويحدد ما تجاوز مهلة 3 أيام.'
+  ));
+  await demoDelay(2800);
+  const s1 = suggestions.find(s=>s.kind==='pending');
+  await demoType(chipLabel(s1));
+  const t1 = addMsg(S('searching'),'typing');
+  try {
+    const r1 = await fetch('/api/copilot/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'pending',lang:window.__lang})});
+    const d1 = await r1.json();
+    t1.remove(); addMsg(d1.reply||S('noResults'),'ai');
+    pushHistory('user',chipLabel(s1)); pushHistory('assistant',d1.reply||'');
+    addFollowUpChips(d1.followUps);
+  } catch(e){ t1.remove(); addMsg(S('serverError'),'ai'); }
+  demoNarrate(N(
+    'Copilot identified the overdue requests and explained priority. Follow-up chips appear for the most logical next questions.',
+    'حدّد المساعد الطلبات المتأخرة وشرح الأولويات. تظهر اقتراحات للأسئلة المنطقية التالية.'
+  ));
+  await demoDelay(4500);
+
+  // Step 2 — burnout risk
+  demoNarrate(N(
+    'Now checking burnout risk across the whole organization — Copilot cross-references overtime hours with attendance patterns.',
+    'الآن فحص خطر الإرهاق في المنظمة — يقارن المساعد ساعات العمل الإضافي بأنماط الحضور.'
+  ));
+  await demoDelay(2800);
+  const s2 = suggestions.find(s=>s.kind==='burnoutRisk');
+  await demoType(chipLabel(s2));
+  const t2 = addMsg(S('searching'),'typing');
+  try {
+    const r2 = await fetch('/api/copilot/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'burnoutRisk',lang:window.__lang})});
+    const d2 = await r2.json();
+    t2.remove(); addMsg(d2.reply||S('noResults'),'ai');
+    pushHistory('user',chipLabel(s2)); pushHistory('assistant',d2.reply||'');
+    addFollowUpChips(d2.followUps);
+  } catch(e){ t2.remove(); addMsg(S('serverError'),'ai'); }
+  demoNarrate(N(
+    'Burnout risk identified in real time. HR can act before someone disengages or resigns — not after.',
+    'تم تحديد خطر الإرهاق في الوقت الفعلي. يمكن لـ HR التصرف قبل أن ينفصل الموظف أو يستقيل.'
+  ));
+  await demoDelay(4500);
+
+  // Step 3 — employee briefing
   const dept = (window.__depts||[])[0];
   const emp = dept && dept.employees[0];
   if(emp){
     const empName = `${emp.first_name} ${emp.last_name}`;
-    const q = window.__lang==='ar' ? `الحصول على تقرير ذكاء اصطناعي كامل عن ${empName}` : `Get a full AI briefing on ${empName}`;
+    demoNarrate(N(
+      `Finally — a full AI briefing on ${empName}. One request generates a complete HR intelligence report combining attendance, performance, promotion status, overtime risk, and more.`,
+      `أخيراً — تقرير ذكاء اصطناعي كامل عن ${empName}. طلب واحد يولّد تقريراً شاملاً يجمع الحضور والأداء والترقية وخطر الإرهاق والمزيد.`
+    ));
+    await demoDelay(3500);
+    const q = N(`Get a full AI briefing on ${empName}`, `الحصول على تقرير ذكاء اصطناعي كامل عن ${empName}`);
     await demoType(q);
     __lastEmpId = emp.id; __lastEmpName = empName;
     await answerForEmployee('employeeSummary', emp.id, empName);
+    demoNarrate(N(
+      'Complete employee briefing generated. HR can read it here or download it as a PDF to bring into a performance conversation.',
+      'تم إنشاء التقرير الكامل. يمكن لـ HR قراءته هنا أو تحميله كملف PDF لاستخدامه في محادثات الأداء.'
+    ));
+    await demoDelay(5000);
   }
 
+  demoNarrateHide();
   btn.disabled = false; btn.textContent = S('demoBtn');
 }
 
-async function runDemo2(fromFull){
+async function runDemo2(){
   const btn = document.getElementById('demo-btn-2');
   btn.disabled = true; btn.textContent = S('demoRunning');
   switchView('ld');
   document.getElementById('ld-rec-area').innerHTML = `<div class="empty-hint">${S('ldEmptyHint')}</div>`;
   document.getElementById('ld-manager-area').innerHTML = '';
   document.getElementById('ld-final-area').innerHTML = '';
-  await demoDelay(700);
+
+  demoNarrate(N(
+    'Feature 2 — AI Learning & Development. AI reads each employee\'s performance review and recommends the most relevant courses from the catalog.',
+    'الميزة الثانية — التعلم والتطوير بالذكاء الاصطناعي. يقرأ الذكاء الاصطناعي تقييم الأداء ويوصي بالدورات الأنسب من الكتالوج.'
+  ));
+  await demoDelay(4000);
 
   const dept = (window.__depts||[])[0];
-  if(!dept){ btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+  if(!dept){ demoNarrateHide(); btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+
+  demoNarrate(N(
+    `Selecting the ${dept.label} department from the dropdown — employees will load automatically.`,
+    `اختيار قسم ${dept.label} من القائمة — سيتم تحميل الموظفين تلقائياً.`
+  ));
+  await demoDelay(2000);
   divSelect.value = dept.key;
   divSelect.dispatchEvent(new Event('change'));
-  await demoDelay(700);
+  await demoDelay(1200);
 
   const emp = dept.employees[0];
-  if(!emp){ btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+  if(!emp){ demoNarrateHide(); btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+  const empName = `${emp.first_name} ${emp.last_name}`;
+
+  demoNarrate(N(
+    `Selecting ${empName} — AI will now read their latest performance review notes to identify development needs.`,
+    `اختيار ${empName} — سيقرأ الذكاء الاصطناعي الآن آخر ملاحظات تقييم أدائه لتحديد احتياجات التطوير.`
+  ));
+  await demoDelay(2200);
   empSelect.value = emp.id;
   empSelect.dispatchEvent(new Event('change'));
 
+  demoNarrate(N(
+    'AI is reading the performance review, identifying skill gaps, and matching courses by relevance. This takes a few seconds…',
+    'الذكاء الاصطناعي يقرأ تقييم الأداء ويحدد فجوات المهارات ويطابق الدورات حسب الصلة. هذا يستغرق ثوانٍ...'
+  ));
+
   let waited = 0;
-  while(!document.querySelector('[data-approve]') && waited < 12000){
+  while(!document.querySelector('.rec-grid') && waited < 15000){
     await demoDelay(400); waited += 400;
   }
-  await demoDelay(1200);
+  await demoDelay(800);
+  document.getElementById('ld-rec-area').scrollIntoView({behavior:'smooth', block:'start'});
 
-  const firstApprove = document.querySelector('[data-approve]');
-  if(firstApprove){
-    const recId = firstApprove.dataset.approve;
-    try {
-      await fetch(`/api/recommendations/${recId}/approve`,{method:'PUT'});
-      const upd = await fetch(`/api/recommendations/${emp.id}`);
-      const newRecs = await upd.json();
-      ldCurrentRecs = newRecs;
-      renderHRReview(emp.id, newRecs);
-      showToast(window.__lang==='ar'?'تمت الموافقة على التوصية الأولى':'First recommendation auto-approved');
-    } catch(e){}
-  }
+  demoNarrate(N(
+    '3 personalized courses generated — each ranked by relevance with an AI-written rationale explaining exactly why it fits this employee right now.',
+    'تم إنشاء 3 دورات مخصصة — كل منها مرتبة حسب الصلة مع سبب مكتوب بالذكاء الاصطناعي يشرح لماذا تناسب هذا الموظف الآن.'
+  ));
+  await demoDelay(4500);
 
+  demoNarrate(N(
+    'HR approves or rejects each course, then forwards the decision to the manager. The employee only sees recommendations after both HR and their manager have reviewed them.',
+    'تُوافق الموارد البشرية على كل دورة أو ترفضها، ثم تُرسل القرار إلى المدير. لا يرى الموظف أي شيء إلا بعد مراجعة الطرفين.'
+  ));
+  await demoDelay(5000);
+
+  demoNarrateHide();
   btn.disabled = false; btn.textContent = S('demoBtn');
 }
 
-async function runDemo3(fromFull){
+async function runDemo3(){
   const btn = document.getElementById('demo-btn-3');
   btn.disabled = true; btn.textContent = S('demoRunning');
   switchView('promo');
-  await demoDelay(600);
+
+  demoNarrate(N(
+    'Feature 3 — AI Promotion Readiness Predictor. A transparent score built from 5 policy criteria and live employee records — no black box.',
+    'الميزة الثالثة — نظام توقع الاستعداد للترقية. درجة شفافة مبنية على 5 معايير سياسة وسجلات الموظف الحية — لا صندوق أسود.'
+  ));
+  await demoDelay(4000);
 
   const dept = (window.__depts||[])[0];
-  if(!dept){ btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+  if(!dept){ demoNarrateHide(); btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+
+  demoNarrate(N(
+    `Selecting the ${dept.label} department…`,
+    `اختيار قسم ${dept.label}...`
+  ));
+  await demoDelay(1800);
   promoDivSelect.value = dept.key;
   promoDivSelect.dispatchEvent(new Event('change'));
-  await demoDelay(600);
+  await demoDelay(1000);
 
   const emp = dept.employees[1] || dept.employees[0];
-  if(emp){ promoEmpSelect.value = emp.id; promoEmpSelect.dispatchEvent(new Event('change')); }
+  if(!emp){ demoNarrateHide(); btn.disabled=false; btn.textContent=S('demoBtn'); return; }
+  const empName = `${emp.first_name} ${emp.last_name}`;
 
+  demoNarrate(N(
+    `Selecting ${empName} — AI will now evaluate them against all 5 promotion criteria defined in company policy.`,
+    `اختيار ${empName} — سيُقيّم الذكاء الاصطناعي الآن مدى استيفائه لـ 5 معايير ترقية محددة في سياسة الشركة.`
+  ));
+  await demoDelay(2500);
+  promoEmpSelect.value = emp.id;
+  promoEmpSelect.dispatchEvent(new Event('change'));
+
+  demoNarrate(N(
+    'AI is cross-referencing performance rating, tenure, goal achievement, manager feedback, and leadership certification against policy thresholds…',
+    'الذكاء الاصطناعي يقارن تقييم الأداء والمدة الوظيفية وتحقيق الأهداف وملاحظات المدير وشهادة القيادة بمعايير السياسة...'
+  ));
+
+  let waited = 0;
+  while(!document.querySelector('.score-num') && waited < 10000){
+    await demoDelay(300); waited += 300;
+  }
+  await demoDelay(600);
+
+  demoNarrate(N(
+    'Promotion Readiness Score calculated. Each criterion is shown individually so HR and managers understand exactly what drives the score. The result is always routed to the manager — never shown directly to the employee.',
+    'تم احتساب درجة الاستعداد للترقية. يُعرض كل معيار بشكل منفصل حتى تفهم الموارد البشرية والمديرون ما يحرّك الدرجة. تُرسل النتيجة دائماً إلى المدير وليس للموظف مباشرةً.'
+  ));
+  await demoDelay(6000);
+
+  demoNarrateHide();
   btn.disabled = false; btn.textContent = S('demoBtn');
 }
 
 async function runFullDemo(){
   const btn = document.getElementById('full-demo-btn');
   btn.disabled = true; btn.textContent = S('demoRunning');
-  await runDemo1(true);
+
+  demoNarrate(N(
+    'Starting full demo — 3 AI-powered HR features. Watch how Jisr AI transforms everyday HR workflows.',
+    'بدء العرض الكامل — 3 ميزات للموارد البشرية بالذكاء الاصطناعي. شاهد كيف يحوّل Jisr AI مهام الموارد البشرية اليومية.'
+  ));
   await demoDelay(3500);
-  await runDemo2(true);
+
+  await runDemo1();
+  demoNarrate(N('Moving to Feature 2 — AI Learning & Development…', 'الانتقال إلى الميزة الثانية — التعلم والتطوير...'));
   await demoDelay(3000);
-  await runDemo3(true);
+
+  await runDemo2();
+  demoNarrate(N('Moving to Feature 3 — AI Promotion Readiness…', 'الانتقال إلى الميزة الثالثة — الاستعداد للترقية...'));
+  await demoDelay(3000);
+
+  await runDemo3();
+
+  demoNarrate(N(
+    'Demo complete. All 3 features are live and powered by real data. Ready for your questions.',
+    'اكتمل العرض. جميع الميزات الثلاث تعمل بالبيانات الحقيقية. جاهز لأسئلتكم.'
+  ));
+  await demoDelay(5000);
+  demoNarrateHide();
+
   btn.disabled = false; btn.textContent = S('fullDemoBtn');
 }
 
-document.getElementById('demo-btn-1').addEventListener('click', ()=>runDemo1());
-document.getElementById('demo-btn-2').addEventListener('click', ()=>runDemo2());
-document.getElementById('demo-btn-3').addEventListener('click', ()=>runDemo3());
+document.getElementById('demo-btn-1').addEventListener('click', runDemo1);
+document.getElementById('demo-btn-2').addEventListener('click', runDemo2);
+document.getElementById('demo-btn-3').addEventListener('click', runDemo3);
 document.getElementById('full-demo-btn').addEventListener('click', runFullDemo);
 
 /* ============================================================

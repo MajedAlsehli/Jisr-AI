@@ -65,6 +65,7 @@ function keywordClassify(question) {
   if (/late attendance|repeated late|coming late|late this month/.test(q)) return { intent: 'lateAttendance', employeeName: null };
   if (/await|waiting.*approval|manager approval|not yet approved/.test(q)) return { intent: 'awaitingApproval', employeeName: null };
   if (/approved today|today.*approv/.test(q)) return { intent: 'approvedToday', employeeName: null };
+  if (/not ready|not.*promot|promot.*not|unready/.test(q)) return { intent: 'promotionNotReady', employeeName: null };
   if (/ready for promot|promot.*ready|who.*promot/.test(q)) return { intent: 'promotionReady', employeeName: null };
   if (/top perform|best perform|high perform/.test(q)) return { intent: 'topPerformers', employeeName: null };
   if (/headcount|how many.*employ|employ.*count|staff count/.test(q)) return { intent: 'headcount', employeeName: null };

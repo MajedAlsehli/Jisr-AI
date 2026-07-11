@@ -3,6 +3,47 @@ const router = express.Router();
 const db = require('../db');
 const { classifyIntent, generateChatReply } = require('../services/openai');
 
+const ORG_WIDE_INTENTS = ['pending','lateAttendance','awaitingApproval','approvedToday',
+  'promotionReady','promotionNotReady','topPerformers','headcount','certMissing','newJoiners'];
+
+function formatOrgReply(intent, data) {
+  const names = (arr) => arr.map(e => e.name).join(', ');
+  switch (intent) {
+    case 'pending':
+      return data.count === 0
+        ? 'No requests are currently older than 3 days.'
+        : `Found ${data.count} overdue request(s): ${data.items.map(i => `${i.name}'s ${i.type} (${i.days} day${i.days>1?'s':''})`).join(', ')}.`;
+    case 'lateAttendance':
+      return data.employees.length === 0
+        ? 'No employees show repeated late attendance this month.'
+        : `${data.employees.length} employee(s) with 2+ late records this month: ${data.employees.join(', ')}.`;
+    case 'awaitingApproval':
+      return data.count === 0 ? 'No requests are currently awaiting manager approval.'
+        : `${data.count} request(s) awaiting approval: ${data.items.map(i => `${i.name}'s ${i.type}`).join(', ')}.`;
+    case 'approvedToday':
+      return data.count === 0 ? 'No requests have been approved today.'
+        : `${data.count} request(s) approved today: ${data.items.map(i => `${i.name}'s ${i.type}`).join(', ')}.`;
+    case 'promotionReady':
+      return data.count === 0 ? 'No employees currently meet all promotion criteria.'
+        : `${data.count} employee(s) meet all promotion criteria: ${names(data.employees)}.`;
+    case 'promotionNotReady':
+      return data.count === 0 ? 'All employees currently meet promotion criteria.'
+        : `${data.count} employee(s) do not yet meet all promotion criteria: ${names(data.employees)}.`;
+    case 'topPerformers':
+      return data.count === 0 ? 'No employees met both performance and goal targets this quarter.'
+        : `${data.count} top performer(s) this quarter (met both performance rating and goal targets): ${names(data.employees)}.`;
+    case 'headcount':
+      return `Total headcount: ${data.total}. Breakdown — ${data.departments.map(d => `${d.department}: ${d.count}`).join(', ')}.`;
+    case 'certMissing':
+      return data.count === 0 ? 'All employees have their leadership certification.'
+        : `${data.count} employee(s) missing leadership certification: ${names(data.employees)}.`;
+    case 'newJoiners':
+      return data.count === 0 ? 'No employees joined in the last year.'
+        : `${data.count} employee(s) joined in the last year: ${names(data.employees)}.`;
+    default: return null;
+  }
+}
+
 async function handleIntent(intent, empId) {
   switch (intent) {
     case 'pending': {
@@ -117,6 +158,20 @@ async function handleIntent(intent, empId) {
       );
       return { intent, data: { count: r.rows.length, employees: r.rows } };
     }
+    case 'promotionNotReady': {
+      const r = await db.query(
+        `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department
+         FROM employees e JOIN departments d ON e.department_id = d.id
+         WHERE NOT (
+           e.performance_rating_met = true AND e.goal_achievement_met = true
+           AND e.leadership_cert = true AND e.manager_feedback_positive = true
+           AND e.peer_feedback_positive = true
+           AND (CURRENT_DATE - e.role_start_date) / 365.25 >= 2
+         )
+         ORDER BY d.label, e.first_name`
+      );
+      return { intent, data: { count: r.rows.length, employees: r.rows } };
+    }
     case 'topPerformers': {
       const r = await db.query(
         `SELECT e.first_name || ' ' || e.last_name AS name, e.role, d.label AS department
@@ -210,7 +265,10 @@ router.post('/chat', async (req, res) => {
       return res.json({ reply: "I couldn't find the information for that request.", needsEmployee: false });
     }
 
-    const reply = await generateChatReply(result.intent, result.data);
+    const reply = ORG_WIDE_INTENTS.includes(result.intent)
+      ? formatOrgReply(result.intent, result.data)
+      : await generateChatReply(result.intent, result.data);
+
     res.json({ reply, needsEmployee: false });
   } catch (err) {
     console.error(err);

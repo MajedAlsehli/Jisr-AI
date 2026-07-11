@@ -38,8 +38,8 @@ router.get('/:empId', async (req, res) => {
     );
 
     if (existing.rows.length > 0) {
-      const allDone = existing.rows.every(r => r.hr_status === 'approved' || r.hr_status === 'rejected');
-      if (!allDone) {
+      const loopComplete = existing.rows.every(r => r.manager_presented_at !== null);
+      if (!loopComplete) {
         return res.json(formatRecs(existing.rows));
       }
     }

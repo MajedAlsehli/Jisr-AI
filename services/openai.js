@@ -59,6 +59,20 @@ Write a concise 1-2 sentence rationale explaining why this specific course is re
   }
 }
 
+function keywordClassify(question) {
+  const q = question.toLowerCase();
+  if (/pending|overdue/.test(q)) return { intent: 'pending', employeeName: null };
+  if (/late attendance|repeated late|coming late|late this month/.test(q)) return { intent: 'lateAttendance', employeeName: null };
+  if (/await|waiting.*approval|manager approval|not yet approved/.test(q)) return { intent: 'awaitingApproval', employeeName: null };
+  if (/approved today|today.*approv/.test(q)) return { intent: 'approvedToday', employeeName: null };
+  if (/attendance|absent|present|showing up/.test(q)) return { intent: 'attendance', employeeName: null };
+  if (/leave balance|days (off|remaining|left)|vacation|annual leave/.test(q)) return { intent: 'balance', employeeName: null };
+  if (/policy|recent request|request status/.test(q)) return { intent: 'policy', employeeName: null };
+  if (/\bmanager\b|reports to|who.*manage|managed by/.test(q)) return { intent: 'manager', employeeName: null };
+  if (/tenure|how long|years in|time in (role|position)/.test(q)) return { intent: 'tenure', employeeName: null };
+  return { intent: 'unknown', employeeName: null };
+}
+
 async function classifyIntent(question) {
   try {
     const prompt = `Classify this HR question into one of these intents and extract any employee name mentioned.
@@ -86,12 +100,11 @@ Respond with valid JSON only: {"intent": "<one of the intents above>", "employee
       max_tokens: 60,
     });
     const parsed = JSON.parse(res.choices[0].message.content);
-    return {
-      intent: parsed.intent || 'unknown',
-      employeeName: parsed.employeeName || null,
-    };
+    const intent = parsed.intent || 'unknown';
+    if (intent === 'unknown') return keywordClassify(question);
+    return { intent, employeeName: parsed.employeeName || null };
   } catch (e) {
-    return { intent: 'unknown', employeeName: null };
+    return keywordClassify(question);
   }
 }
 

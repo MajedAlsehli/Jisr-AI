@@ -8,6 +8,37 @@ const ORG_WIDE_INTENTS = ['pending','lateAttendance','awaitingApproval','approve
   'burnoutRisk','openHeadcount','turnoverRate','disciplinaryCheck',
   'leavePolicy','overtimePolicy','expensePolicy','attendancePolicy'];
 
+function getFollowUps(intent) {
+  const e = true, o = false;
+  const map = {
+    balance:          [{ label:'Check attendance', kind:'attendance', needsEmployee:e }, { label:'Full AI briefing', kind:'employeeSummary', needsEmployee:e }, { label:'Check tenure', kind:'tenure', needsEmployee:e }],
+    attendance:       [{ label:'Check leave balance', kind:'balance', needsEmployee:e }, { label:'Full AI briefing', kind:'employeeSummary', needsEmployee:e }],
+    manager:          [{ label:'Check tenure', kind:'tenure', needsEmployee:e }, { label:'Check leave balance', kind:'balance', needsEmployee:e }],
+    tenure:           [{ label:'Full AI briefing', kind:'employeeSummary', needsEmployee:e }, { label:'Promotion readiness', kind:'promotionReady', needsEmployee:o }],
+    employeeSummary:  [{ label:'Check attendance', kind:'attendance', needsEmployee:e }, { label:'Check leave balance', kind:'balance', needsEmployee:e }, { label:'Disciplinary records', kind:'disciplinaryCheck', needsEmployee:o }],
+    policy:           [{ label:'Leave policy', kind:'leavePolicy', needsEmployee:o }, { label:'Overtime policy', kind:'overtimePolicy', needsEmployee:o }],
+    promotionReady:   [{ label:'Show not ready', kind:'promotionNotReady', needsEmployee:o }, { label:'Top performers', kind:'topPerformers', needsEmployee:o }, { label:'Missing certifications', kind:'certMissing', needsEmployee:o }],
+    promotionNotReady:[{ label:'Show ready', kind:'promotionReady', needsEmployee:o }, { label:'Missing certifications', kind:'certMissing', needsEmployee:o }],
+    topPerformers:    [{ label:'Promotion readiness', kind:'promotionReady', needsEmployee:o }, { label:'Headcount by dept', kind:'headcount', needsEmployee:o }],
+    certMissing:      [{ label:'Promotion readiness', kind:'promotionReady', needsEmployee:o }, { label:'Top performers', kind:'topPerformers', needsEmployee:o }],
+    burnoutRisk:      [{ label:'Late attendance', kind:'lateAttendance', needsEmployee:o }, { label:'Open positions', kind:'openHeadcount', needsEmployee:o }, { label:'Overtime policy', kind:'overtimePolicy', needsEmployee:o }],
+    lateAttendance:   [{ label:'Burnout risk', kind:'burnoutRisk', needsEmployee:o }, { label:'Pending requests', kind:'pending', needsEmployee:o }],
+    pending:          [{ label:'Awaiting approval', kind:'awaitingApproval', needsEmployee:o }, { label:'Approved today', kind:'approvedToday', needsEmployee:o }],
+    awaitingApproval: [{ label:'Pending requests', kind:'pending', needsEmployee:o }, { label:'Approved today', kind:'approvedToday', needsEmployee:o }],
+    approvedToday:    [{ label:'Pending requests', kind:'pending', needsEmployee:o }, { label:'Awaiting approval', kind:'awaitingApproval', needsEmployee:o }],
+    headcount:        [{ label:'Open positions', kind:'openHeadcount', needsEmployee:o }, { label:'Turnover rate', kind:'turnoverRate', needsEmployee:o }, { label:'New joiners', kind:'newJoiners', needsEmployee:o }],
+    turnoverRate:     [{ label:'Open positions', kind:'openHeadcount', needsEmployee:o }, { label:'Headcount by dept', kind:'headcount', needsEmployee:o }],
+    openHeadcount:    [{ label:'Turnover rate', kind:'turnoverRate', needsEmployee:o }, { label:'Headcount by dept', kind:'headcount', needsEmployee:o }],
+    newJoiners:       [{ label:'Headcount by dept', kind:'headcount', needsEmployee:o }, { label:'Promotion readiness', kind:'promotionReady', needsEmployee:o }],
+    disciplinaryCheck:[{ label:'Burnout risk', kind:'burnoutRisk', needsEmployee:o }, { label:'Top performers', kind:'topPerformers', needsEmployee:o }],
+    leavePolicy:      [{ label:'Overtime policy', kind:'overtimePolicy', needsEmployee:o }, { label:'Attendance policy', kind:'attendancePolicy', needsEmployee:o }],
+    overtimePolicy:   [{ label:'Leave policy', kind:'leavePolicy', needsEmployee:o }, { label:'Burnout risk', kind:'burnoutRisk', needsEmployee:o }],
+    expensePolicy:    [{ label:'Leave policy', kind:'leavePolicy', needsEmployee:o }, { label:'Attendance policy', kind:'attendancePolicy', needsEmployee:o }],
+    attendancePolicy: [{ label:'Leave policy', kind:'leavePolicy', needsEmployee:o }, { label:'Burnout risk', kind:'burnoutRisk', needsEmployee:o }],
+  };
+  return map[intent] || [];
+}
+
 function formatOrgReply(intent, data) {
   const names = (arr) => arr.map(e => e.name).join(', ');
   switch (intent) {
@@ -485,7 +516,28 @@ router.post('/chat', async (req, res) => {
         ? formatOrgReply(result.intent, result.data)
         : await generateChatReply(result.intent, result.data);
 
-    res.json({ reply, needsEmployee: false });
+    const followUps = getFollowUps(result.intent);
+    res.json({ reply, needsEmployee: false, followUps });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/briefing', async (req, res) => {
+  try {
+    const [pendingRes, promoRes, pipsRes, burnoutRes] = await Promise.all([
+      db.query(`SELECT COUNT(*) AS n FROM requests WHERE submitted_at < NOW()-INTERVAL '3 days' AND status IN ('pending','overdue')`),
+      db.query(`SELECT COUNT(*) AS n FROM employees WHERE performance_rating_met=true AND goal_achievement_met=true AND leadership_cert=true AND manager_feedback_positive=true AND peer_feedback_positive=true AND (CURRENT_DATE-role_start_date)/365.25>=2`),
+      db.query(`SELECT COUNT(*) AS n FROM disciplinary_records WHERE resolved=false AND type IN ('pip','written_warning','final_warning')`),
+      db.query(`SELECT e.id FROM overtime_records ot JOIN employees e ON ot.employee_id=e.id JOIN attendance_records ar ON ar.employee_id=e.id AND ar.date BETWEEN '2025-07-01' AND '2025-09-30' WHERE ot.hours>=15 AND ot.month=(SELECT month FROM overtime_records ORDER BY month DESC LIMIT 1) GROUP BY e.id HAVING ROUND(100.0*COUNT(ar.id) FILTER(WHERE ar.status IN ('present','late'))/NULLIF(COUNT(ar.id),0))<90`),
+    ]);
+    res.json({
+      pending:       parseInt(pendingRes.rows[0].n),
+      promotionReady:parseInt(promoRes.rows[0].n),
+      activePips:    parseInt(pipsRes.rows[0].n),
+      burnoutRisk:   burnoutRes.rows.length,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

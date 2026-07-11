@@ -180,10 +180,27 @@
   .decision-box{margin-top:16px;}
   .decision-confirmed{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ok);padding:10px 4px;}
 
+  /* ================= BRIEFING BAR ================= */
+  .briefing-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);}
+  .brief-card{background:var(--gray-100);border-radius:var(--radius-sm);padding:10px 10px 9px;cursor:pointer;transition:background .15s;text-align:center;border:1px solid transparent;}
+  .brief-card:hover{background:var(--ink);border-color:var(--ink);}
+  .brief-card:hover .brief-num,.brief-card:hover .brief-label{color:var(--white)!important;}
+  .brief-num{font-size:22px;font-weight:800;line-height:1;}
+  .brief-label{font-size:10px;color:var(--gray-500);margin-top:3px;line-height:1.3;font-weight:500;}
+  .brief-card.warn .brief-num{color:var(--warn);}
+  .brief-card.danger .brief-num{color:var(--danger);}
+  .brief-card.ok .brief-num{color:var(--ok);}
+
+  /* ================= FOLLOW-UP CHIPS ================= */
+  .followup-chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 0 2px;}
+  .followup-chip{font-size:11.5px;font-weight:600;color:var(--gray-700);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .followup-chip:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
   @media (max-width:860px){
     .copilot-grid,.promo-grid{grid-template-columns:1fr;}
     .rec-grid{grid-template-columns:1fr;}
     .navtabs{display:none;}
+    .briefing-bar{grid-template-columns:repeat(2,1fr);}
   }
 </style>
 </head>
@@ -231,6 +248,7 @@
       </div>
       <div class="card chat-card">
         <div class="chat-head"><span class="dot"></span> HR Copilot</div>
+        <div class="briefing-bar" id="briefing-bar"></div>
         <div class="chat-body" id="chat-body"></div>
         <div class="chips" id="chat-chips"></div>
         <div class="chat-input-row">
@@ -409,6 +427,7 @@ document.querySelectorAll(".navtab").forEach(tab=>{
     document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById("view-"+tab.dataset.view).classList.add("active");
+    if (tab.dataset.view === 'copilot') loadBriefing();
   });
 });
 
@@ -517,6 +536,56 @@ function renderChips(){
   }
 }
 
+async function loadBriefing() {
+  const bar = document.getElementById('briefing-bar');
+  try {
+    const res = await fetch('/api/copilot/briefing');
+    const d = await res.json();
+    const cards = [
+      { num: d.pending,        label: 'Pending Requests',    kind: 'pending',          cls: d.pending > 0 ? 'warn' : '' },
+      { num: d.burnoutRisk,    label: 'Burnout Risk',         kind: 'burnoutRisk',      cls: d.burnoutRisk > 0 ? 'danger' : '' },
+      { num: d.promotionReady, label: 'Promotion Ready',      kind: 'promotionReady',   cls: d.promotionReady > 0 ? 'ok' : '' },
+      { num: d.activePips,     label: 'Active Warnings/PIPs', kind: 'disciplinaryCheck',cls: d.activePips > 0 ? 'danger' : '' },
+    ];
+    bar.innerHTML = cards.map(c =>
+      `<div class="brief-card ${c.cls}" data-kind="${c.kind}">
+        <div class="brief-num">${c.num}</div>
+        <div class="brief-label">${c.label}</div>
+      </div>`
+    ).join('');
+    bar.querySelectorAll('.brief-card').forEach(card => {
+      card.addEventListener('click', () => {
+        triggerSuggestion({ label: card.querySelector('.brief-label').textContent, needsEmployee: false, kind: card.dataset.kind });
+      });
+    });
+  } catch(e) { bar.innerHTML = ''; }
+}
+
+function addFollowUpChips(chips) {
+  if (!chips || !chips.length) return;
+  const row = document.createElement('div');
+  row.className = 'followup-chips';
+  chips.forEach(chip => {
+    const btn = document.createElement('button');
+    btn.className = 'followup-chip';
+    btn.textContent = chip.label;
+    btn.addEventListener('click', () => {
+      row.remove();
+      if (!chip.needsEmployee) {
+        triggerSuggestion({ label: chip.label, needsEmployee: false, kind: chip.kind });
+      } else if (__lastEmpId) {
+        addMsg(chip.label, 'user');
+        answerForEmployee(chip.kind, __lastEmpId, __lastEmpName);
+      } else {
+        triggerSuggestion({ label: chip.label, needsEmployee: true, kind: chip.kind });
+      }
+    });
+    row.appendChild(btn);
+  });
+  chatBody.appendChild(row);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
 async function triggerSuggestion(s){
   addMsg(s.label, "user");
   if (!s.needsEmployee){
@@ -529,6 +598,7 @@ async function triggerSuggestion(s){
       const data = await res.json();
       typing.remove();
       addMsg(data.reply || "No results found.", "ai");
+      addFollowUpChips(data.followUps);
     } catch(e) {
       typing.remove();
       addMsg("Unable to reach the server. Please try again.", "ai");
@@ -602,6 +672,7 @@ async function answerForEmployee(kind, empId, empName){
     if (kind === 'policy'){
       addAction('Flag for manager sign-off', ()=> addMsg('Request flagged for manager review.', 'ai'));
     }
+    addFollowUpChips(data.followUps);
   } catch(e) {
     typing.remove();
     addMsg("Unable to reach the server. Please try again.", "ai");
@@ -637,6 +708,7 @@ async function handleFreeText(q){
       askForEmployee((empId, empName) => answerForEmployee(data.suggestedIntent || 'balance', empId, empName));
     } else {
       addMsg(data.reply || "No results found.", "ai");
+      addFollowUpChips(data.followUps);
     }
   } catch(e) {
     typing.remove();
@@ -983,7 +1055,8 @@ function renderPromo(empId, data){
 
   await renderQueue();
   await loadNotifications();
-  addMsg("Hi, I'm your HR Copilot. Pick a question type below to get started.", "ai");
+  await loadBriefing();
+  addMsg("Hi, I'm your HR Copilot. Pick a question type below or click any metric above to get started.", "ai");
   renderChips();
 })();
 </script>

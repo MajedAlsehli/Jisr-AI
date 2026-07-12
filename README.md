@@ -82,7 +82,7 @@ OpenAI (gpt-4o-mini)
 ```bash
 # 1. Clone and install
 git clone <your-repo-url>
-cd jisr-ai-backend
+cd jisr-ai
 npm install
 
 # 2. Create a Postgres database

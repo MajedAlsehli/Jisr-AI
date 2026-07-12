@@ -1,7 +1,7 @@
 {
-  "name": "jisr-ai-backend",
+  "name": "jisr-ai",
   "version": "1.0.0",
-  "description": "Jisr AI MVP — full-stack HR AI assistant with OpenAI + PostgreSQL",
+  "description": "Jisr AI — AI-powered decision support for HR operations, employee development, and promotion decisions",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

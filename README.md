@@ -1,20 +1,20 @@
-# Jisr AI — Interactive Prototype
+# Qarar AI — Interactive Prototype
 
 **Embedding AI-Powered Decision Support into HR Operations, Employee Development, and Promotion Decisions**
 
-A working interactive prototype built to validate a product proposal for [Jisr](https://www.jisr.net/en), Saudi Arabia's leading HR SaaS platform. The prototype demonstrates three AI-powered capabilities layered directly on top of real employee and HR data, with OpenAI used exclusively to narrate pre-computed, deterministic facts in natural language — never to invent data or make decisions.
+A working interactive prototype demonstrating AI-powered decision support for HR platforms. The prototype demonstrates three AI-powered capabilities layered directly on top of real employee and HR data, with OpenAI used exclusively to narrate pre-computed, deterministic facts in natural language — never to invent data or make decisions.
 
 ---
 
 ## The Problem
 
-Jisr already gives organizations one integrated place for payroll, attendance, leave, recruitment, performance, and employee records. But having the data in one place doesn't automatically make it easy to use. Day-to-day HR work still leans heavily on people manually searching for information and applying their own judgment before they can respond or act.
+Modern HR platforms already give organizations one integrated place for payroll, attendance, leave, recruitment, performance, and employee records. But having the data in one place doesn't automatically make it easy to use. Day-to-day HR work still leans heavily on people manually searching for information and applying their own judgment before they can respond or act.
 
 This shows up in three ways:
 
 - **Routine operations** — Answering a simple question about leave or attendance requires opening several parts of the platform and cross-referencing manually, with no built-in prioritization.
 - **Employee development** — Training decisions happen once a year, by gut, with no structured way to match an employee's actual skill gaps to the right course. Two HR specialists can produce two different plans for the same employee.
-- **Promotion readiness** — Every promotion case requires manually reassembling performance, tenure, training, attendance, and policy data — information that already lives in Jisr, just not gathered in one place that clearly says whether someone is ready.
+- **Promotion readiness** — Every promotion case requires manually reassembling performance, tenure, training, attendance, and policy data — information that already lives in the system, just not gathered in one place that clearly says whether someone is ready.
 
 ---
 
@@ -82,16 +82,16 @@ OpenAI (gpt-4o-mini)
 ```bash
 # 1. Clone and install
 git clone <your-repo-url>
-cd jisr-ai
+cd qarar-ai
 npm install
 
 # 2. Create a Postgres database
-createdb jisr_ai
+createdb qarar_ai
 
 # 3. Configure environment
 cp .env.example .env
 # Fill in:
-#   DATABASE_URL=postgresql://localhost/jisr_ai
+#   DATABASE_URL=postgresql://localhost/qarar_ai
 #   OPENAI_API_KEY=sk-...
 #   OPENAI_MODEL=gpt-4o-mini   (optional, this is the default)
 #   PORT=3000                  (optional)

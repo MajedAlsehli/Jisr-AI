@@ -21,4 +21,4 @@ app.use('/api/employees', require('./routes/employees'));
 app.use('/api/reset', require('./routes/reset'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Jisr AI running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Qarar AI running on http://localhost:${PORT}`));

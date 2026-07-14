@@ -1,4 +1,4 @@
-# Qarar AI — Interactive Prototype
+# Qarar+ — Interactive Prototype
 
 **Embedding AI-Powered Decision Support into HR Operations, Employee Development, and Promotion Decisions**
 
@@ -82,16 +82,16 @@ OpenAI (gpt-4o-mini)
 ```bash
 # 1. Clone and install
 git clone <your-repo-url>
-cd qarar-ai
+cd qarar-plus
 npm install
 
 # 2. Create a Postgres database
-createdb qarar_ai
+createdb qarar_plus
 
 # 3. Configure environment
 cp .env.example .env
 # Fill in:
-#   DATABASE_URL=postgresql://localhost/qarar_ai
+#   DATABASE_URL=postgresql://localhost/qarar_plus
 #   OPENAI_API_KEY=sk-...
 #   OPENAI_MODEL=gpt-4o-mini   (optional, this is the default)
 #   PORT=3000                  (optional)

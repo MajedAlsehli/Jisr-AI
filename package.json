@@ -1,7 +1,7 @@
 {
-  "name": "qarar-ai",
+  "name": "qarar-plus",
   "version": "1.0.0",
-  "description": "Qarar AI — AI-powered decision support for HR operations, employee development, and promotion decisions",
+  "description": "Qarar+ — AI-powered decision support for HR operations, employee development, and promotion decisions",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
